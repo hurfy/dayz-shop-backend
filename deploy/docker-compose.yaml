@@ -1,0 +1,36 @@
+services:
+
+  server:
+    restart: always
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: fastapi_app
+    command: uvicorn src.main:app --host=${FASTAPI_HOST} --port=${FASTAPI_PORT} --reload
+    volumes:
+      - .:/dayz-shop-backend
+    env_file:
+      - ../.env
+    environment:
+      - PYTHONPATH=/home/dayz-shop-backend/src
+    depends_on:
+      - db
+    ports:
+      - ${FASTAPI_PORT}:${FASTAPI_PORT}
+    expose:
+      - ${FASTAPI_PORT}
+
+  db:
+    restart: always
+    image: postgres:latest
+    container_name: postgresql
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ../.env
+    shm_size: 128mb
+
+volumes:
+  postgres_data:
