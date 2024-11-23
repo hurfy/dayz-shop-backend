@@ -1,5 +1,6 @@
-from fastapi           import APIRouter, HTTPException, status
+from fastapi           import APIRouter, HTTPException, status, Path
 from typing            import List
+from uuid              import UUID
 
 from shop.repositories import ProductRepository
 from shop.schemas      import SProductGet, SProductCreate, SProductUpdate, SProductPartialUpdate
@@ -29,7 +30,7 @@ async def get_product_list() -> list[SProductGet]:
             404: PRODUCT_RESPONSES[404],
     },
 )
-async def get_product(product_id: int) -> SProductGet:
+async def get_product(product_id: UUID = Path(..., format="uuid")) -> SProductGet:
     """Get product by ID"""
     try:
         return await ProductRepository.fetch_product(product_id)
@@ -56,10 +57,16 @@ async def create_product(product_data: SProductCreate) -> SProductGet:
         404: PRODUCT_RESPONSES[404],
     },
 )
-async def update_product(product_id: int, product_data: SProductUpdate) -> SProductGet:
+async def update_product(
+        product_data: SProductUpdate, product_id: UUID = Path(..., format="uuid")
+) -> SProductGet:
     """Update the product"""
     try:
-        return await ProductRepository.update_product(product_id=product_id, product_data=product_data, partial=False)
+        return await ProductRepository.update_product(
+            product_id=product_id,
+            product_data=product_data,
+            partial=False
+        )
 
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -73,10 +80,16 @@ async def update_product(product_id: int, product_data: SProductUpdate) -> SProd
         404: PRODUCT_RESPONSES[404],
     },
 )
-async def partial_update_product(product_id: int, product_data: SProductPartialUpdate) -> SProductGet:
+async def partial_update_product(
+        product_data: SProductPartialUpdate, product_id: UUID = Path(..., format="uuid")
+) -> SProductGet:
     """Partial update the product"""
     try:
-        return await ProductRepository.update_product(product_id=product_id, product_data=product_data, partial=True)
+        return await ProductRepository.update_product(
+            product_id=product_id,
+            product_data=product_data,
+            partial=True
+        )
 
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -90,7 +103,7 @@ async def partial_update_product(product_id: int, product_data: SProductPartialU
         404: PRODUCT_RESPONSES[404],
     },
 )
-async def delete_product(product_id: int) -> None:
+async def delete_product(product_id: UUID = Path(..., format="uuid")) -> None:
     """Delete the product"""
     try:
         await ProductRepository.delete_product(product_id)

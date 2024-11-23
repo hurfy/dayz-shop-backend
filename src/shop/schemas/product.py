@@ -1,5 +1,5 @@
-from pydantic import BaseModel, HttpUrl
-from typing   import Optional
+from pydantic import BaseModel, HttpUrl, UUID4
+from typing   import Optional, Any
 
 from utils    import to_camelcase
 
@@ -20,10 +20,19 @@ class SProductBase(BaseModel):
         populate_by_name = True
         from_attributes  = True
 
+    def model_dump(self, *args, **kwargs) -> dict[str, Any]:
+        """Converting HttpUrl to str"""
+        dumped = super().model_dump(*args, **kwargs)
+
+        # Exist?
+        if dumped.get("image_url", None) is not None:
+            dumped["image_url"] = str(dumped["image_url"])
+
+        return dumped
 
 # GET, GET by ID
 class SProductGet(SProductBase):
-    id: int
+    id: UUID4
 
 # POST,
 class SProductCreate(SProductBase):

@@ -1,4 +1,5 @@
 from sqlalchemy   import select
+from uuid         import UUID
 
 from shop.schemas import SProductGet, SProductCreate, SProductUpdate, SProductPartialUpdate
 from shop.models  import MProduct
@@ -25,7 +26,7 @@ class ProductRepository:
             ]
 
     @classmethod
-    async def fetch_product(cls, product_id: int) -> SProductGet:
+    async def fetch_product(cls, product_id: UUID) -> SProductGet:
         """Get product by ID ..."""
         async with new_session() as session:
             # Fetch all data from MProduct where id == product_id
@@ -47,10 +48,6 @@ class ProductRepository:
             # Product data as dict
             data = product_data.model_dump()
 
-            # Fix me
-            if "image_url" in data:
-                data["image_url"] = str(data["image_url"])
-
             # Add to session
             product = MProduct(**data)
             session.add(product)
@@ -64,7 +61,7 @@ class ProductRepository:
 
     @classmethod
     async def update_product(
-            cls, product_id: int, product_data: SProductUpdate | SProductPartialUpdate, partial: bool
+            cls, product_id: UUID, product_data: SProductUpdate | SProductPartialUpdate, partial: bool
     ) -> SProductGet:
         """Update | Partial update the product ..."""
         async with new_session() as session:
@@ -80,10 +77,6 @@ class ProductRepository:
             # Product data as dict
             data = product_data.model_dump(exclude_unset=partial)
 
-            # Fix me
-            if "image_url" in data:
-                data["image_url"] = str(data["image_url"])
-
             # Modifying the data
             for key, value in data.items():
                 setattr(product, key, value)
@@ -94,7 +87,7 @@ class ProductRepository:
             return SProductGet.model_validate(product)
 
     @classmethod
-    async def delete_product(cls, product_id: int) -> None:
+    async def delete_product(cls, product_id: UUID) -> None:
         """Delete the product ..."""
         async with new_session() as session:
             # Fetch all data from MProduct where id == product_id
