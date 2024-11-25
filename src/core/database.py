@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm         import DeclarativeBase
 
-from config                 import settings
+from core.config            import settings
 
 
 db_engine   = create_async_engine(
@@ -9,11 +9,7 @@ db_engine   = create_async_engine(
     # "sqlite+aiosqlite:///database.db"
 
     # PostgreSQL
-    f"postgresql+asyncpg://"
-    f"{settings.POSTGRES_USER}:"
-    f"{settings.POSTGRES_PASSWORD}@"
-    f"db:{settings.POSTGRES_PORT}/"
-    f"{settings.POSTGRES_DB}"
+    settings.DATABASE_URL_asyncpg
 )
 new_session = async_sessionmaker(
     db_engine, expire_on_commit=False

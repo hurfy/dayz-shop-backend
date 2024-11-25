@@ -1,1 +1,0 @@
-from shop.routers.product import router as products_router

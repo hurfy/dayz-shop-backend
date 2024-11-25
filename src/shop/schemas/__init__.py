@@ -1,1 +1,0 @@
-from shop.schemas.product import SProductBase, SProductGet, SProductCreate, SProductUpdate, SProductPartialUpdate

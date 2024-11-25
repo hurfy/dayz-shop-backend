@@ -1,0 +1,1 @@
+from api.shop.routers import products_router, category_router
