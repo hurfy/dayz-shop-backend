@@ -4,9 +4,9 @@ from crud             import CRUDRepositoryMixin, GetListRepositoryMixin, TypeOR
 
 
 class CategoryRepository(CRUDRepositoryMixin, GetListRepositoryMixin):
+    model  = MCategory
+    schema = CategorySchema
+
     @classmethod
     async def create_response_data(cls, object_data: TypeORM) -> TypeSchema:
         return cls.schema.get.model_validate(object_data)
-
-    model  = MCategory
-    schema = CategorySchema

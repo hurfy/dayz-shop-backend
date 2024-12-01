@@ -46,7 +46,7 @@ async def get_category(category_id: int = id_) -> CategoryResponse:
 @router.post(
     path="/",
     status_code=status.HTTP_201_CREATED,
-    response_model=CategoryCreate,
+    response_model=CategoryResponse,
 )
 async def create_category(category_data: CategoryCreate) -> CategoryResponse:
     """Create a category"""

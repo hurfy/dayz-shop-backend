@@ -50,7 +50,7 @@ class GetRepositoryMixin(RepositoryBase, metaclass=ABCMeta):
 
             # Does the object exist? (HTTP 404)
             if not (obj := query.scalars().first()):
-                raise ValueError(f"{cls.model.__name__[1:].lower()} with ID {object_id} not found")
+                raise ValueError(f"{cls.model.__name__[1:].lower()} with id {object_id} not found")
 
             return await cls.create_response_data(obj)
 
@@ -66,7 +66,7 @@ class UpdateRepositoryMixin(RepositoryBase, metaclass=ABCMeta):
 
             # Does the object exist? (HTTP 404)
             if not (obj := query.scalars().first()):
-                raise ValueError(f"{cls.model.__name__[1:].lower()} with ID {object_id} not found")
+                raise ValueError(f"{cls.model.__name__[1:].lower()} with id {object_id} not found")
 
             # Modifying the data
             data = object_data.model_dump(exclude_unset=partial)
@@ -89,7 +89,7 @@ class DeleteRepositoryMixin(RepositoryBase, metaclass=ABCMeta):
 
             # Does the object exist? (HTTP 404)
             if not (obj := query.scalars().first()):
-                raise ValueError(f"{cls.model.__name__[1:].lower()} with ID {object_id} not found")
+                raise ValueError(f"{cls.model.__name__[1:].lower()} with id {object_id} not found")
 
             await session.delete(obj)
             await session.commit()

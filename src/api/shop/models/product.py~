@@ -1,7 +1,7 @@
 import enum, uuid
 
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy     import Enum, ForeignKey
+from sqlalchemy     import  Enum
 from typing         import Optional
 
 from database       import Model
@@ -17,7 +17,7 @@ class MProduct(Model):
 
     id               : Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     name             : Mapped[str]
-    category_id      : Mapped[int] = mapped_column(ForeignKey("shop_categories.id"))
+    category_id      : Mapped[int]  # = mapped_column(ForeignKey("shop_categories.id"))
     surcharge        : Mapped[int] = mapped_column(default=0)
     original_price   : Mapped[int]
     type             : Mapped[ProductType] = mapped_column(Enum(ProductType))

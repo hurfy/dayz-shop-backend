@@ -52,9 +52,11 @@ async def get_product(product_id: str = uuid_) -> ProductResponse:
 async def create_product(product_data: ProductCreate) -> ProductResponse:
     """Create a product"""
     # return await ProductRepository.create_product(product_data)
-    return await ProductRepository.create(
-        object_data=product_data,
-    )
+    try:
+        return await ProductRepository.create(object_data=product_data)
+
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 # Update data ----------------------------------------------------------------------------------------------------------

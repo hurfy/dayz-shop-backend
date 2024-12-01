@@ -6,7 +6,7 @@ HTTP_RESPONSES = {
         "content": {
             "application/json": {
                 "example": {
-                    "detail": "Object with ID ... not found"
+                    "detail": "Object with id ... not found"
                 }
             }
         }
