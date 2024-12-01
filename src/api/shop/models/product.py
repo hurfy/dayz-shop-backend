@@ -4,7 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy     import  Enum
 from typing         import Optional
 
-from core.database   import Model
+from database       import Model
 
 
 class ProductType(str, enum.Enum):

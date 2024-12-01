@@ -1,7 +1,7 @@
-from sqlalchemy.orm            import Mapped, mapped_column
-from typing                    import Optional
+from sqlalchemy.orm import Mapped, mapped_column
+from typing         import Optional
 
-from core.database import Model
+from database       import Model
 
 
 class MCategory(Model):

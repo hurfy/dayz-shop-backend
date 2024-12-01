@@ -3,7 +3,7 @@ from contextlib              import asynccontextmanager
 from fastapi                 import FastAPI
 
 from api                     import products_router, category_router
-from core.database           import create_tables, delete_tables
+from database                import create_tables, delete_tables
 
 origins = [
     "http://localhost:8000",
@@ -15,12 +15,26 @@ origins = [
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    # await delete_tables()
-    # await create_tables()
+    await delete_tables()
+    await create_tables()
     yield
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    lifespan=lifespan,
+    title="DayZ Exsidium Shop",
+    version="0.1",
+    contact={
+        "name" : "hurfy",
+        "url"  : "https://t.me/thehurfy",
+        "email": "hurfydev+dayzshop@gmail.com",
+    },
+    license_info={
+        "name": "MIT License",
+        "url" : "https://mit-license.org/",
+    },
+)
+
 app.include_router(products_router)
 app.include_router(category_router)
 

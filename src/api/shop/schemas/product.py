@@ -1,23 +1,63 @@
-from pydantic        import BaseModel, HttpUrl, UUID4, computed_field
+from pydantic        import BaseModel, Field, HttpUrl, UUID4, computed_field
 from typing          import Optional, Any
 
 from api.shop.models import ProductType
-from core.utils      import to_camelcase
-from core.crud       import CRUDSchema
+from decorators      import optional
+from api.utils       import to_camelcase
+from crud            import CRUDSchema
 
 
-# Basic
+PRICE_FIELD = Field(
+    ge=0,
+    title="Original price from the in-game merchant",
+    examples=[24000000],
+)
+SURCHARGE_FIELD = Field(
+    gt=0,
+    title="Product surcharge",
+    description="The surcharge cannot be less than 0. Otherwise, the final price will not be calculated correctly.",
+    examples=[10],
+)
+
+
 class ProductBase(BaseModel):
-    name             : str
-    category_id      : int
-    surcharge        : int
-    original_price   : int
-    type             : ProductType
-    count            : int
-    description      : Optional[str]
-    image_url        : HttpUrl
-    is_discount_apply: bool
-    is_show          : bool
+    name: str = Field(
+        max_length=256,
+        title="Product name",
+        examples=["Doom Slayer Toy"],
+    )
+    category_id: int = Field(
+        gt=0,
+        title="Category ID",
+        examples=[24],
+    )
+    type: ProductType = Field(
+        title="Product type",
+        examples=["purchase", "sell"],
+    )
+    count: int = Field(
+        ge=0,
+        title="Product count in stock",
+        examples=[1],
+    )
+    description: Optional[str] = Field(
+        default=None,
+        max_length=512,
+        title="Product description",
+        examples=["I wanna be your Slayer"],
+    )
+    image_url: HttpUrl = Field(
+        title="Product image URL",
+        examples=["https://image.com/doom_slayer_toy.jpg"],
+    )
+    is_discount_apply: bool = Field(
+        title="Whether a purchase discount can be applied",
+        examples=[True],
+    )
+    is_show: bool = Field(
+        title="Is the product visible",
+        examples=[True],
+    )
 
     class Config:
         alias_generator  = to_camelcase
@@ -34,48 +74,45 @@ class ProductBase(BaseModel):
 
         return dumped
 
-# GET, GET by ID
-class ProductGet(ProductBase):
-    id: UUID4
 
-    @computed_field
+class ProductPriceResponse(BaseModel):
+    original : int = PRICE_FIELD
+    surcharge: int = SURCHARGE_FIELD
+
+    @computed_field(
+        description="Final cost of the product, taking into account surcharge",
+        examples=["26400000"],
+    )
     @property
-    def price(self) -> int:
+    def final(self) -> int:
         """Calculates the final cost of the product, taking into account surcharge"""
         if self.surcharge == 0:
-            return self.original_price
+            return self.original
 
-        return int(self.original_price * (1 + self.surcharge / 100))
+        return int(self.original * (1 + self.surcharge / 100))
 
-# POST
+
+class ProductResponse(ProductBase):
+    id: UUID4 = Field(
+        title="Product ID",
+        description="Can convert `strings` to actual `UUID` automatically",
+        examples=["3f2504e0-4f89-11d3-9a0c-0305e82c3301"],
+    )
+    price: ProductPriceResponse
+
+
 class ProductCreate(ProductBase):
-    pass
+    """Сan use this for a complete upgrade"""
+    original_price: int = PRICE_FIELD
+    surcharge     : int = SURCHARGE_FIELD
 
-# DELETE
-class ProductDelete(ProductBase):
-    pass
 
-# PUT
-class ProductUpdate(ProductBase):
+@optional()
+class ProductUpdate(ProductCreate):
     pass
-
-# PATCH
-class ProductPartialUpdate(ProductBase):
-    name             : Optional[str]     = None
-    category_id      : Optional[int]     = None
-    surcharge        : Optional[int]     = None
-    original_price   : Optional[int]     = None
-    type             : Optional[ProductType] = None
-    count            : Optional[int]     = None
-    description      : Optional[str]     = None
-    image_url        : Optional[HttpUrl] = None
-    is_discount_apply: Optional[bool]    = None
-    is_show          : Optional[bool]    = None
 
 
 class ProductSchema(CRUDSchema):
-    get      = ProductGet
-    create   = ProductCreate
-    update   = ProductUpdate
-    p_update = ProductPartialUpdate
-    delete   = ProductDelete
+    get    = ProductResponse
+    create = ProductCreate
+    update = ProductUpdate

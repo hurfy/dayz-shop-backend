@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     POSTGRES_DB      : str = None
     POSTGRES_PORT    : str = None
 
-    model_config = SettingsConfigDict(env_file="../../.env")
+    model_config = SettingsConfigDict(env_file="../.env")
 
     @property
     def DATABASE_URL_asyncpg(self) -> str:

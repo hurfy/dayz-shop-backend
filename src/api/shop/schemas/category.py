@@ -1,46 +1,53 @@
-from pydantic   import BaseModel
+from pydantic   import BaseModel, Field
 from typing     import Optional
 
-from core.utils import to_camelcase
-from core.crud  import CRUDSchema
+from decorators import optional
+from api.utils  import to_camelcase
+from crud       import CRUDSchema
 
-# Basic
+
 class CategoryBase(BaseModel):
-    name       : str
-    description: Optional[str]
-    is_show    : bool
+    name: str = Field(
+        max_length=256,
+        title="Category name",
+        examples=["weapon"],
+    )
+    description: Optional[str] = Field(
+        default=None,
+        max_length=512,
+        title="Category description",
+        examples=["better guns in all of chernarus"],
+    )
+    is_show: bool = Field(
+        title="Is the category visible",
+        examples=[True],
+    )
 
     class Config:
         alias_generator  = to_camelcase
         populate_by_name = True
         from_attributes  = True
 
-# GET, GET by ID
-class CategoryGet(CategoryBase):
-    id: int
 
-# POST
+class CategoryResponse(CategoryBase):
+    id: int = Field(
+        gt=0,
+        title="Category ID",
+        examples=["12"],
+    )
+
+
 class CategoryCreate(CategoryBase):
-    pass
+    """Сan use this for a complete upgrade"""
+    ...
 
-# DELETE
-class CategoryDelete(CategoryBase):
-    pass
 
-# PUT
+@optional()
 class CategoryUpdate(CategoryBase):
-    pass
-
-# PATCH
-class CategoryPartialUpdate(CategoryBase):
-    name       : Optional[str]
-    description: Optional[str]
-    is_show    : Optional[bool]
+    ...
 
 
 class CategorySchema(CRUDSchema):
-    get      = CategoryGet
-    create   = CategoryCreate
-    update   = CategoryUpdate
-    p_update = CategoryPartialUpdate
-    delete   = CategoryDelete
+    get    = CategoryResponse
+    create = CategoryCreate
+    update = CategoryUpdate

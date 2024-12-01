@@ -1,23 +1,25 @@
-from fastapi               import APIRouter, HTTPException, status, Path
-from typing                import List
-from uuid                  import UUID
+from fastapi               import APIRouter, HTTPException, status
+from typing                import List, Type
 
 from api.shop.repositories import ProductRepository
-from api.shop.schemas      import ProductGet, ProductCreate, ProductUpdate, ProductPartialUpdate
-from core.utils            import HTTP_RESPONSES
+from api.shop.schemas      import ProductResponse, ProductCreate, ProductUpdate
+from api.utils             import HTTP_RESPONSES
+from schemas               import Model, uuid_
 
 router = APIRouter(
-    prefix="/products",
-    tags=["Products"],
+    prefix = "/products",
+    tags   = ["Products"],
 )
 
 
+
+# Get data -------------------------------------------------------------------------------------------------------------
 @router.get(
     path="/",
     status_code=status.HTTP_200_OK,
-    response_model=List[ProductGet],
+    response_model=List[ProductResponse],
 )
-async def get_product_list() -> list[ProductGet]:
+async def get_product_list() -> list[ProductResponse]:
     """Get list of products"""
     return await ProductRepository.fetch_list()
 
@@ -25,12 +27,12 @@ async def get_product_list() -> list[ProductGet]:
 @router.get(
     path="/{product_id}",
     status_code=status.HTTP_200_OK,
-    response_model=ProductGet,
+    response_model=ProductResponse,
     responses={
             404: HTTP_RESPONSES[404],
     },
 )
-async def get_product(product_id: UUID = Path(..., format="uuid")) -> ProductGet:
+async def get_product(product_id: str = uuid_) -> ProductResponse:
     """Get product by ID"""
     try:
         return await ProductRepository.fetch(
@@ -41,12 +43,13 @@ async def get_product(product_id: UUID = Path(..., format="uuid")) -> ProductGet
         raise HTTPException(status_code=404, detail=str(e))
 
 
+# Create data ----------------------------------------------------------------------------------------------------------
 @router.post(
     path="/",
     status_code=status.HTTP_201_CREATED,
-    response_model=ProductGet,
+    response_model=ProductResponse,
 )
-async def create_product(product_data: ProductCreate) -> ProductGet:
+async def create_product(product_data: ProductCreate) -> ProductResponse:
     """Create a product"""
     # return await ProductRepository.create_product(product_data)
     return await ProductRepository.create(
@@ -54,52 +57,47 @@ async def create_product(product_data: ProductCreate) -> ProductGet:
     )
 
 
-@router.put(
-    path="/{product_id}",
-    status_code=status.HTTP_200_OK,
-    response_model=ProductGet,
-    responses={
-        404: HTTP_RESPONSES[404],
-    },
-)
-async def update_product(
-        product_data: ProductUpdate, product_id: UUID = Path(..., format="uuid")
-) -> ProductGet:
-    """Update the product"""
+# Update data ----------------------------------------------------------------------------------------------------------
+async def update_product_base(
+        product_data: Type[Model], product_id: str = uuid_, partial: bool = False
+) -> ProductResponse:
     try:
         return await ProductRepository.update(
             object_id=product_id,
             object_data=product_data,
-            partial=False
+            partial=partial
         )
 
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+@router.put(
+    path="/{product_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=ProductResponse,
+    responses={
+        404: HTTP_RESPONSES[404],
+    },
+)
+async def update_product(product_data: ProductCreate, product_id: str = uuid_) -> ProductResponse:
+    """Update the product"""
+    return await update_product_base(product_data, product_id, partial=False)
 
 
 @router.patch(
     path="/{product_id}",
     status_code=status.HTTP_200_OK,
-    response_model=ProductGet,
+    response_model=ProductResponse,
     responses={
         404: HTTP_RESPONSES[404],
     },
 )
-async def partial_update_product(
-        product_data: ProductPartialUpdate, product_id: UUID = Path(..., format="uuid")
-) -> ProductGet:
+async def partial_update_product(product_data: ProductUpdate, product_id: str = uuid_) -> ProductResponse:
     """Partial update the product"""
-    try:
-        return await ProductRepository.update(
-            object_id=product_id,
-            object_data=product_data,
-            partial=True
-        )
-
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    return await update_product_base(product_data, product_id, partial=True)
 
 
+# Delete data ----------------------------------------------------------------------------------------------------------
 @router.delete(
     path="/{product_id}",
     status_code=status.HTTP_204_NO_CONTENT,
@@ -108,7 +106,7 @@ async def partial_update_product(
         404: HTTP_RESPONSES[404],
     },
 )
-async def delete_product(product_id: UUID = Path(..., format="uuid")) -> None:
+async def delete_product(product_id: str = uuid_) -> None:
     """Delete the product"""
     try:
         await ProductRepository.delete(product_id)
