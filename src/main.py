@@ -2,7 +2,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib              import asynccontextmanager
 from fastapi                 import FastAPI
 
-from api                     import products_router, category_router
+from api.crud import products_router, categories_router, orders_router
 from database                import create_tables, delete_tables
 
 origins = [
@@ -31,12 +31,13 @@ app = FastAPI(
     },
     license_info={
         "name": "MIT License",
-        "url" : "https://mit-license.org/",
+        "url" : "https://github.com/hurfy/dayz-shop-backend/blob/main/LICENSE",
     },
 )
 
 app.include_router(products_router)
-app.include_router(category_router)
+app.include_router(categories_router)
+app.include_router(orders_router)
 
 app.add_middleware(
     CORSMiddleware,

@@ -1,9 +1,10 @@
 from pydantic   import BaseModel, Field
-from typing     import Optional
 
 from decorators import optional
 from api.utils  import to_camelcase
-from crud       import CRUDSchema
+from api.shared import CRUDSchema
+
+__all__ = ["CategoryBase", "CategorySchema", "CategoryResponse", "CategoryCreate", "CategoryUpdate"]
 
 
 class CategoryBase(BaseModel):
@@ -12,7 +13,7 @@ class CategoryBase(BaseModel):
         title="Category name",
         examples=["weapon"],
     )
-    description: Optional[str] = Field(
+    description: str | None = Field(
         default=None,
         max_length=512,
         title="Category description",
@@ -48,6 +49,6 @@ class CategoryUpdate(CategoryBase):
 
 
 class CategorySchema(CRUDSchema):
-    get    = CategoryResponse
-    create = CategoryCreate
-    update = CategoryUpdate
+    response = CategoryResponse
+    create   = CategoryCreate
+    update   = CategoryUpdate

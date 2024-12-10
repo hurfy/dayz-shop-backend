@@ -1,5 +1,4 @@
 from sqlalchemy.orm import Mapped, mapped_column
-from typing         import Optional
 
 from database       import Model
 
@@ -9,5 +8,5 @@ class MCategory(Model):
 
     id         : Mapped[int] = mapped_column(primary_key=True)
     name       : Mapped[str] = mapped_column(unique=True)
-    description: Mapped[Optional[str]]
+    description: Mapped[str | None]
     is_show    : Mapped[bool]

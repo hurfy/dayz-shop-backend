@@ -1,8 +1,8 @@
-import enum, uuid
+import enum
+import uuid
 
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy     import Enum, ForeignKey
-from typing         import Optional
 
 from database       import Model
 
@@ -22,7 +22,7 @@ class MProduct(Model):
     original_price   : Mapped[int]
     type             : Mapped[ProductType] = mapped_column(Enum(ProductType))
     count            : Mapped[int]
-    description      : Mapped[Optional[str]]
+    description      : Mapped[str | None]
     image_url        : Mapped[str]
     is_discount_apply: Mapped[bool]
     is_show          : Mapped[bool]

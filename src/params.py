@@ -1,12 +1,12 @@
 from pydantic import BaseModel
 from fastapi  import Path
-from typing   import Type, TypeVar
+from typing   import TypeVar, Annotated
 
-Model = TypeVar("Model", bound=Type[BaseModel])
+Model = TypeVar("Model", bound=type[BaseModel])
 
 
 # Path
-uuid_ = Path(
+uuid_ = Annotated[str, Path(
     default          = ...,
     min_length       = 32,
     max_length       = 36,
@@ -23,9 +23,9 @@ uuid_ = Path(
             "value"  : "123e4567-e89b-12d3-a456-42665544000012",
         },
     },
-)
+)]
 
-id_ = Path(
+id_ = Annotated[int, Path(
     default = ...,
     gt      = 0,
     title   = "ID",
@@ -40,7 +40,7 @@ id_ = Path(
             "value"  : -34,
         },
     },
-)
+)]
 
 
 # Query

@@ -1,12 +1,11 @@
-import pydantic.fields
+import pydantic.fields as fields
 
-from pydantic import BaseModel, create_model
-from typing   import Optional, Type, Any, Callable
-from copy     import deepcopy
+from collections.abc import Callable
+from pydantic        import BaseModel, create_model
+from typing          import Any
+from copy            import deepcopy
 
-from database import Model
-
-
+from database        import Model
 
 
 def optional(without_fields: list[str] | None = None) -> Callable[[Model], Model]:
@@ -15,15 +14,15 @@ def optional(without_fields: list[str] | None = None) -> Callable[[Model], Model
     if without_fields is None:
         without_fields = []
 
-    def wrapper(model: Type[Model]) -> Type[Model]:
-        base_model: Type[Model] = model
+    def wrapper(model: type[Model]) -> type[Model]:
+        base_model: type[Model] = model
 
         def make_field_optional(
-            field: pydantic.fields.FieldInfo, default: Any = None
-        ) -> tuple[Any, pydantic.fields.FieldInfo]:
+            field: fields.FieldInfo, default: Any = None
+        ) -> tuple[Any, fields.FieldInfo]:
             new = deepcopy(field)
             new.default = default
-            new.annotation = Optional[field.annotation]
+            new.annotation = field.annotation | None
 
             return new.annotation, new
 

@@ -1,10 +1,9 @@
-from fastapi               import APIRouter, status, HTTPException
-from typing                import List, Type
+from fastapi               import APIRouter, status
 
-from api.shop.repositories import CategoryRepository
+from api.crud.repositories import CategoryRepository
 from api.shop.schemas      import CategoryResponse, CategoryCreate, CategoryUpdate
 from api.utils             import HTTP_RESPONSES
-from schemas               import Model, id_
+from params                import Model, id_
 
 router = APIRouter(
     prefix = "/categories",
@@ -16,7 +15,7 @@ router = APIRouter(
 @router.get(
     path="/",
     status_code=status.HTTP_200_OK,
-    response_model=List[CategoryResponse],
+    response_model=list[CategoryResponse],
 )
 async def get_category_list() -> list[CategoryResponse]:
     """Get list of categories"""
@@ -31,15 +30,11 @@ async def get_category_list() -> list[CategoryResponse]:
             404: HTTP_RESPONSES[404],
     },
 )
-async def get_category(category_id: int = id_) -> CategoryResponse:
+async def get_category(category_id: id_) -> CategoryResponse:
     """Get category by ID"""
-    try:
-        return await CategoryRepository.fetch(
-            object_id=category_id,
-        )
-
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    return await CategoryRepository.fetch(
+        object_id=category_id,
+    )
 
 
 # Create data ----------------------------------------------------------------------------------------------------------
@@ -57,17 +52,13 @@ async def create_category(category_data: CategoryCreate) -> CategoryResponse:
 
 # Update data ----------------------------------------------------------------------------------------------------------
 async def update_category_base(
-        category_data: Type[Model], category_id: int = id_, partial: bool = False
+        category_data: type[Model], category_id: id_, partial: bool = False
 ) -> CategoryResponse:
-    try:
-        return await CategoryRepository.update(
-            object_id=category_id,
-            object_data=category_data,
-            partial=partial,
-        )
-
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    return await CategoryRepository.update(
+        object_id=category_id,
+        object_data=category_data,
+        partial=partial,
+    )
 
 
 @router.put(
@@ -78,7 +69,7 @@ async def update_category_base(
         404: HTTP_RESPONSES[404],
     },
 )
-async def update_category(category_data: CategoryCreate, category_id: int = id_) -> CategoryResponse:
+async def update_category(category_data: CategoryCreate, category_id: id_) -> CategoryResponse:
     """Update the category"""
     return await update_category_base(category_data, category_id, partial=False)
 
@@ -91,7 +82,7 @@ async def update_category(category_data: CategoryCreate, category_id: int = id_)
         404: HTTP_RESPONSES[404],
     },
 )
-async def partial_update_category(category_data: CategoryUpdate, category_id: int = id_) -> CategoryResponse:
+async def partial_update_category(category_data: CategoryUpdate, category_id: id_) -> CategoryResponse:
     """Partial update the category"""
     return await update_category_base(category_data, category_id, partial=True)
 
@@ -105,12 +96,8 @@ async def partial_update_category(category_data: CategoryUpdate, category_id: in
         404: HTTP_RESPONSES[404],
     },
 )
-async def delete_category(category_id: int = id_) -> None:
+async def delete_category(category_id: id_) -> None:
     """Delete the category"""
-    try:
-        await CategoryRepository.delete(
-            object_id=category_id,
-        )
-
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    await CategoryRepository.delete(
+        object_id=category_id,
+    )

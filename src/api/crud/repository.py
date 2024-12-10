@@ -1,10 +1,15 @@
-from sqlalchemy   import select
-from typing       import TypeVar, Generic, Type
-from uuid         import UUID
-from abc          import ABC, abstractmethod, ABCMeta
+from sqlalchemy import select
+from fastapi    import HTTPException
+from typing     import TypeVar, Generic
+from uuid       import UUID
+from abc        import ABC, ABCMeta
 
-from crud.schemas import CRUDSchema
-from database     import Model, new_session
+from api.shared import CRUDSchema
+from database   import Model, new_session
+
+__all__ = [
+    "CRUDMixin", "GetMixin", "GetListMixin", "CreateMixin", "UpdateMixin", "DeleteMixin", "TypeORM", "TypeSchema"
+]
 
 
 TypeORM    = TypeVar("TypeORM",    bound=Model)
@@ -12,22 +17,21 @@ TypeSchema = TypeVar("TypeSchema", bound=CRUDSchema)
 
 
 class RepositoryBase(Generic[TypeORM, TypeSchema], ABC):
-    model  = Type[TypeORM]
-    schema = Type[TypeSchema]
+    model  = type[TypeORM]
+    schema = type[TypeSchema]
 
     @classmethod
-    @abstractmethod
-    async def create_response_data(cls, object_data: TypeORM) -> TypeSchema:
-        """This abstract method implements a way to serialize data from database objects into a response schema"""
-        ...
+    async def response_data(cls, object_data: TypeORM) -> TypeSchema:
+        """This method implements a way to serialize data from database objects into a response schema"""
+        return cls.schema.response.model_validate(object_data)
 
 
-class CreateRepositoryMixin(RepositoryBase, metaclass=ABCMeta):
+class CreateMixin(RepositoryBase, metaclass=ABCMeta):
     @classmethod
     async def create(cls, object_data: TypeSchema) -> TypeSchema:
         """Create an object in database ..."""
         async with new_session() as session:
-            data = object_data.model_dump()
+            data = object_data.model_dump(mode="json")
 
             # Create a model object and add it to the session
             obj = cls.model(**data)
@@ -36,10 +40,10 @@ class CreateRepositoryMixin(RepositoryBase, metaclass=ABCMeta):
             await session.flush()
             await session.commit()
 
-            return await cls.create_response_data(obj)
+            return await cls.response_data(obj)
 
 
-class GetRepositoryMixin(RepositoryBase, metaclass=ABCMeta):
+class GetMixin(RepositoryBase, metaclass=ABCMeta):
     @classmethod
     async def fetch(cls, object_id: int | UUID) -> TypeSchema:
         """Fetch an object from database ..."""
@@ -50,12 +54,15 @@ class GetRepositoryMixin(RepositoryBase, metaclass=ABCMeta):
 
             # Does the object exist? (HTTP 404)
             if not (obj := query.scalars().first()):
-                raise ValueError(f"{cls.model.__name__[1:].lower()} with id {object_id} not found")
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"{cls.model.__name__[1:].lower()} with id {object_id} not found"
+                )
 
-            return await cls.create_response_data(obj)
+            return await cls.response_data(obj)
 
 
-class UpdateRepositoryMixin(RepositoryBase, metaclass=ABCMeta):
+class UpdateMixin(RepositoryBase, metaclass=ABCMeta):
     @classmethod
     async def update(cls, object_id: int | UUID, object_data: TypeSchema, partial: bool) -> TypeSchema:
         """Update or partial update the object in database ..."""
@@ -66,19 +73,22 @@ class UpdateRepositoryMixin(RepositoryBase, metaclass=ABCMeta):
 
             # Does the object exist? (HTTP 404)
             if not (obj := query.scalars().first()):
-                raise ValueError(f"{cls.model.__name__[1:].lower()} with id {object_id} not found")
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"{cls.model.__name__[1:].lower()} with id {object_id} not found"
+                )
 
             # Modifying the data
-            data = object_data.model_dump(exclude_unset=partial)
+            data = object_data.model_dump(exclude_unset=partial, mode="json")
             for key, value in data.items():
                 setattr(obj, key, value)
 
             await session.commit()
 
-            return await cls.create_response_data(obj)
+            return await cls.response_data(obj)
 
 
-class DeleteRepositoryMixin(RepositoryBase, metaclass=ABCMeta):
+class DeleteMixin(RepositoryBase, metaclass=ABCMeta):
     @classmethod
     async def delete(cls, object_id: int | UUID) -> None:
         """Delete an object from database ..."""
@@ -89,13 +99,16 @@ class DeleteRepositoryMixin(RepositoryBase, metaclass=ABCMeta):
 
             # Does the object exist? (HTTP 404)
             if not (obj := query.scalars().first()):
-                raise ValueError(f"{cls.model.__name__[1:].lower()} with id {object_id} not found")
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"{cls.model.__name__[1:].lower()} with id {object_id} not found"
+                )
 
             await session.delete(obj)
             await session.commit()
 
 
-class GetListRepositoryMixin(RepositoryBase, metaclass=ABCMeta):
+class GetListMixin(RepositoryBase, metaclass=ABCMeta):
     @classmethod
     async def fetch_list(cls) -> list[TypeSchema]:
         """Fetch the list of objects from database ..."""
@@ -108,11 +121,11 @@ class GetListRepositoryMixin(RepositoryBase, metaclass=ABCMeta):
             as_dict = query.scalars().all()
 
             # Serialize each object to pydantic scheme
-            return [await cls.create_response_data(each) for each in as_dict]
+            return [await cls.response_data(each) for each in as_dict]
 
 
-class CRUDRepositoryMixin(
-    CreateRepositoryMixin, GetRepositoryMixin, UpdateRepositoryMixin, DeleteRepositoryMixin,
+class CRUDMixin(
+    CreateMixin, GetMixin, UpdateMixin, DeleteMixin,
     metaclass=ABCMeta
 ):
     ...
