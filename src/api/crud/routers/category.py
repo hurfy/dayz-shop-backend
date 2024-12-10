@@ -1,9 +1,9 @@
-from fastapi               import APIRouter, status
+from fastapi                 import APIRouter, status
 
-from api.crud.repositories import CategoryRepository
-from api.shop.schemas      import CategoryResponse, CategoryCreate, CategoryUpdate
-from api.utils             import HTTP_RESPONSES
-from params                import Model, id_
+from api.shared.repositories import CategoryRepository
+from api.shop.schemas        import CategoryResponse, CategoryCreate, CategoryUpdate
+from api.utils               import HTTP_RESPONSES
+from params                  import Model, id_
 
 router = APIRouter(
     prefix = "/categories",

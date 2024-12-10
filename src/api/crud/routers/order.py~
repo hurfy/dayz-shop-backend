@@ -1,10 +1,10 @@
-from starlette               import status
-from fastapi                 import APIRouter
+from starlette             import status
+from fastapi               import APIRouter
 
-from api.shared.repositories import OrderRepository
-from api.shop.schemas        import OrderResponse, OrderCreate
-from api.utils               import HTTP_RESPONSES
-from params                  import Model, uuid_
+from api.crud.repositories import OrderRepository
+from api.shop.schemas      import OrderResponse, OrderCreate
+from api.utils             import HTTP_RESPONSES
+from params                import Model, uuid_
 
 router = APIRouter(
     prefix = "/orders",

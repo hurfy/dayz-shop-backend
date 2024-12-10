@@ -2,10 +2,11 @@ import pydantic.fields as fields
 
 from collections.abc import Callable
 from pydantic        import BaseModel, create_model
-from typing          import Any
+from typing          import Any, TypeVar
 from copy            import deepcopy
 
-from database        import Model
+
+Model = TypeVar("Model", bound=type(BaseModel))
 
 
 def optional(without_fields: list[str] | None = None) -> Callable[[Model], Model]:

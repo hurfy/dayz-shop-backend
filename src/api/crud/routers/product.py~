@@ -1,9 +1,9 @@
-from fastapi                 import APIRouter, status
+from fastapi               import APIRouter, status
 
-from api.shared.repositories import ProductRepository
-from api.shop.schemas        import ProductResponse, ProductCreate, ProductUpdate
-from api.utils               import HTTP_RESPONSES
-from params                  import Model, uuid_
+from api.crud.repositories import ProductRepository
+from api.shop.schemas      import ProductResponse, ProductCreate, ProductUpdate
+from api.utils             import HTTP_RESPONSES
+from params                import Model, uuid_
 
 router = APIRouter(
     prefix = "/products",
