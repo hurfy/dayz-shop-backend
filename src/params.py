@@ -1,6 +1,8 @@
-from pydantic import BaseModel
-from fastapi  import Path
-from typing   import TypeVar, Annotated
+from pydantic              import BaseModel
+from fastapi               import Path, Body
+from typing                import TypeVar, Annotated
+
+from api.shop.models.order import EOrderStatus
 
 Model = TypeVar("Model", bound=type[BaseModel])
 
@@ -47,4 +49,6 @@ id_ = Annotated[int, Path(
 # ...
 
 # Body
-# ...
+status = Annotated[EOrderStatus, Body(
+
+)]

@@ -7,7 +7,7 @@ from sqlalchemy     import Enum, ForeignKey
 from database       import Model
 
 
-class ProductType(str, enum.Enum):
+class EProductType(str, enum.Enum):
     PURCHASE = "purchase"
     SELL     = "sell"
 
@@ -20,7 +20,7 @@ class MProduct(Model):
     category_id      : Mapped[int] = mapped_column(ForeignKey("shop_categories.id"))
     surcharge        : Mapped[int] = mapped_column(default=0)
     original_price   : Mapped[int]
-    type             : Mapped[ProductType] = mapped_column(Enum(ProductType))
+    type             : Mapped[EProductType] = mapped_column(Enum(EProductType))
     count            : Mapped[int]
     description      : Mapped[str | None]
     image_url        : Mapped[str]

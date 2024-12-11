@@ -1,11 +1,12 @@
-from fastapi          import HTTPException
-from sqlalchemy       import select
-from uuid             import UUID
+from fastapi                  import HTTPException
+from sqlalchemy               import select
+from uuid                     import UUID
 
-from api.shop.schemas import ProductSchema, ProductPriceResponse, ProductResponse, ProductCreate, ProductUpdate
-from api.shop.models  import MProduct, MCategory
-from database         import new_session
-from api.crud         import CRUDMixin, GetListMixin, TypeSchema
+from api.shop.schemas.product import ProductSchema, ProductPrice, ProductResponse, ProductCreate, ProductUpdate
+from api.shop.models.category import MCategory
+from api.shop.models.product  import MProduct
+from database                 import new_session
+from api.crud.repository      import CRUDMixin, GetListMixin, TypeSchema
 
 
 class ProductRepository(CRUDMixin, GetListMixin):
@@ -15,7 +16,7 @@ class ProductRepository(CRUDMixin, GetListMixin):
     @classmethod
     async def response_data(cls, object_data: MProduct) -> TypeSchema:
         """..."""
-        object_data.price = ProductPriceResponse.model_validate(
+        object_data.price = ProductPrice.model_validate(
             {
                 "original" : object_data.original_price,
                 "surcharge": object_data.surcharge,

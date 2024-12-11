@@ -1,9 +1,9 @@
-from fastapi                 import APIRouter, status
+from fastapi                         import APIRouter, status
 
-from api.shared.repositories import ProductRepository
-from api.shop.schemas        import ProductResponse, ProductCreate, ProductUpdate
-from api.utils               import HTTP_RESPONSES
-from params                  import Model, uuid_
+from api.shared.repositories.product import ProductRepository
+from api.shop.schemas.product        import ProductResponse, ProductCreate, ProductUpdate
+from api.utils                       import HTTP_RESPONSES
+from params                          import Model, uuid_
 
 router = APIRouter(
     prefix = "/products",
@@ -17,7 +17,7 @@ router = APIRouter(
     status_code=status.HTTP_200_OK,
     response_model=list[ProductResponse],
 )
-async def get_product_list() -> list[ProductResponse]:
+async def get_list() -> list[ProductResponse]:
     """Get list of products"""
     return await ProductRepository.fetch_list()
 
@@ -30,7 +30,7 @@ async def get_product_list() -> list[ProductResponse]:
             404: HTTP_RESPONSES[404],
     },
 )
-async def get_product(product_id: uuid_) -> ProductResponse:
+async def get(product_id: uuid_) -> ProductResponse:
     """Get product by id"""
     return await ProductRepository.fetch(
         object_id=product_id
@@ -43,16 +43,16 @@ async def get_product(product_id: uuid_) -> ProductResponse:
     status_code=status.HTTP_201_CREATED,
     response_model=ProductResponse,
 )
-async def create_product(product_data: ProductCreate) -> ProductResponse:
+async def create(product_data: ProductCreate) -> ProductResponse:
     """Create a product"""
     return await ProductRepository.create(object_data=product_data)
 
 
 # Update data ----------------------------------------------------------------------------------------------------------
-async def update_product_base(
+async def update_base(
         product_data: type[Model], product_id: uuid_, partial: bool = False
 ) -> ProductResponse:
-    """..."""
+    """update_product_base ..."""
     return await ProductRepository.update(
         object_id=product_id,
         object_data=product_data,
@@ -67,9 +67,9 @@ async def update_product_base(
         404: HTTP_RESPONSES[404],
     },
 )
-async def update_product(product_data: ProductCreate, product_id: uuid_) -> ProductResponse:
+async def update(product_data: ProductCreate, product_id: uuid_) -> ProductResponse:
     """Update the product"""
-    return await update_product_base(product_data, product_id, partial=False)
+    return await update_base(product_data, product_id, partial=False)
 
 
 @router.patch(
@@ -80,9 +80,9 @@ async def update_product(product_data: ProductCreate, product_id: uuid_) -> Prod
         404: HTTP_RESPONSES[404],
     },
 )
-async def partial_update_product(product_data: ProductUpdate, product_id: uuid_) -> ProductResponse:
+async def partial_update(product_data: ProductUpdate, product_id: uuid_) -> ProductResponse:
     """Partial update the product"""
-    return await update_product_base(product_data, product_id, partial=True)
+    return await update_base(product_data, product_id, partial=True)
 
 
 # Delete data ----------------------------------------------------------------------------------------------------------
@@ -94,6 +94,6 @@ async def partial_update_product(product_data: ProductUpdate, product_id: uuid_)
         404: HTTP_RESPONSES[404],
     },
 )
-async def delete_product(product_id: uuid_) -> None:
+async def delete(product_id: uuid_) -> None:
     """Delete the product"""
     await ProductRepository.delete(product_id)

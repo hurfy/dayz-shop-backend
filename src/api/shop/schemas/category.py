@@ -1,8 +1,8 @@
-from pydantic   import BaseModel, Field
+from pydantic        import BaseModel, Field
 
-from decorators import optional
-from api.utils  import to_camelcase
-from api.shared import CRUDSchema
+from api.crud.schema import CRUDSchema
+from decorators      import optional
+from api.utils       import to_camelcase
 
 __all__ = ["CategoryBase", "CategorySchema", "CategoryResponse", "CategoryCreate", "CategoryUpdate"]
 

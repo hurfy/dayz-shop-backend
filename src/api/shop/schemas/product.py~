@@ -1,7 +1,7 @@
 from pydantic                import BaseModel, Field, HttpUrl, UUID4, computed_field
 from typing                  import Annotated
 
-from api.shop.models.product import EProductType
+from api.shop.models.product import ProductType
 from api.crud.schema         import CRUDSchema
 from decorators              import optional
 from api.utils               import to_camelcase
@@ -33,7 +33,7 @@ class ProductBase(BaseModel):
         title="Category ID",
         examples=[24],
     )
-    type: EProductType = Field(
+    type: ProductType = Field(
         title="Product type",
         examples=["purchase", "sell"],
     )

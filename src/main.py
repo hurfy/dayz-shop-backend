@@ -2,7 +2,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib              import asynccontextmanager
 from fastapi                 import FastAPI
 
-from api.crud import products_router, categories_router, orders_router
+from api                     import products_crud_router, categories_crud_router, orders_crud_router, orders_router
 from database                import create_tables, delete_tables
 
 origins = [
@@ -15,6 +15,7 @@ origins = [
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
+    """lifespan ..."""
     await delete_tables()
     await create_tables()
     yield
@@ -35,8 +36,9 @@ app = FastAPI(
     },
 )
 
-app.include_router(products_router)
-app.include_router(categories_router)
+app.include_router(products_crud_router)
+app.include_router(categories_crud_router)
+app.include_router(orders_crud_router)
 app.include_router(orders_router)
 
 app.add_middleware(

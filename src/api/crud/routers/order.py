@@ -1,10 +1,10 @@
-from starlette               import status
-from fastapi                 import APIRouter
+from starlette                     import status
+from fastapi                       import APIRouter
 
-from api.shared.repositories import OrderRepository
-from api.shop.schemas        import OrderResponse, OrderCreate
-from api.utils               import HTTP_RESPONSES
-from params                  import Model, uuid_
+from api.shared.repositories.order import OrderRepository
+from api.shop.schemas.order        import OrderResponse, OrderCreate
+from api.utils                     import HTTP_RESPONSES
+from params                        import Model, uuid_
 
 router = APIRouter(
     prefix = "/orders",
@@ -18,7 +18,7 @@ router = APIRouter(
     status_code=status.HTTP_200_OK,
     response_model=list[OrderResponse],
 )
-async def get_orders_list() -> list[OrderResponse]:
+async def get_list() -> list[OrderResponse]:
     """Get list of orders"""
     return await OrderRepository.fetch_list()
 
@@ -31,7 +31,7 @@ async def get_orders_list() -> list[OrderResponse]:
         404: HTTP_RESPONSES[404],
     },
 )
-async def get_order(order_id: uuid_) -> OrderResponse:
+async def get(order_id: uuid_) -> OrderResponse:
     """Get order by id"""
     return await OrderRepository.fetch(
         object_id=order_id
@@ -44,16 +44,16 @@ async def get_order(order_id: uuid_) -> OrderResponse:
     status_code=status.HTTP_201_CREATED,
     response_model=OrderResponse,
 )
-async def create_order(order_data: OrderCreate) -> OrderResponse:
+async def create(order_data: OrderCreate) -> OrderResponse:
     """Create a product"""
     return await OrderRepository.create(object_data=order_data)
 
 
 # Update data ----------------------------------------------------------------------------------------------------------
-async def update_order_base(
+async def update_base(
         order_data: type[Model], order_id: uuid_, partial: bool = False
 ) -> OrderResponse:
-    """..."""
+    """update_order_base ..."""
     return await OrderRepository.update(
         object_id=order_id,
         object_data=order_data,
@@ -69,9 +69,9 @@ async def update_order_base(
         404: HTTP_RESPONSES[404],
     },
 )
-async def update_order(order_data: OrderCreate, order_id: uuid_) -> OrderResponse:
+async def update(order_data: OrderCreate, order_id: uuid_) -> OrderResponse:
     """Update the order"""
-    return await update_order_base(order_data, order_id, partial=False)
+    return await update_base(order_data, order_id, partial=False)
 
 
 @router.patch(
@@ -82,9 +82,9 @@ async def update_order(order_data: OrderCreate, order_id: uuid_) -> OrderRespons
         404: HTTP_RESPONSES[404],
     },
 )
-async def partial_update_order(order_data: OrderCreate, order_id: uuid_) -> OrderResponse:
+async def partial_update(order_data: OrderCreate, order_id: uuid_) -> OrderResponse:
     """Partial update the order"""
-    return await update_order_base(order_data, order_id, partial=True)
+    return await update_base(order_data, order_id, partial=True)
 
 
 # Delete data ----------------------------------------------------------------------------------------------------------
@@ -96,7 +96,7 @@ async def partial_update_order(order_data: OrderCreate, order_id: uuid_) -> Orde
         404: HTTP_RESPONSES[404],
     },
 )
-async def delete_order(order_id: uuid_) -> None:
+async def delete(order_id: uuid_) -> None:
     """Delete the order"""
     await OrderRepository.delete(
         object_id=order_id

@@ -16,6 +16,7 @@ class Settings(BaseSettings):
 
     @property
     def DATABASE_URL_asyncpg(self) -> str:
+        """DATABASE_URL_asyncpg ..."""
         return (
             f"postgresql+asyncpg://"
             f"{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"

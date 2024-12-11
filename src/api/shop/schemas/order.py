@@ -1,12 +1,21 @@
-from pydantic        import BaseModel, Field, UUID4
+from pydantic              import BaseModel, Field, UUID4
+from typing                import Annotated
 
-from api.shop.models import OrderStatus
-from decorators      import optional
-from api.utils       import to_camelcase
-from api.shared      import CRUDSchema
+from api.shop.models.order import EOrderStatus
+from api.crud.schema       import CRUDSchema
+from decorators            import optional
+from api.utils             import to_camelcase
 
-__all__ = ["OrderBase", "OrderSchema", "OrderResponse", "OrderCreate", "OrderUpdate", "OrderItem"]
+__all__ = ["OrderBase", "OrderSchema", "OrderResponse", "OrderCreate", "OrderUpdate", "OrderItem", "OrderStatus"]
 
+status = Annotated[EOrderStatus, Field(
+        title="Order status",
+        examples=["waiting", "completed", "canceled"],
+)]
+
+
+class OrderStatus(BaseModel):
+    status: status
 
 class OrderItem(BaseModel):
     product_id: UUID4 = Field(
@@ -25,10 +34,7 @@ class OrderItem(BaseModel):
 
 
 class OrderBase(BaseModel):
-    status: OrderStatus = Field(
-        title="Order status",
-        examples=["waiting", "completed", "canceled"],
-    )
+    status: status
     user_id: UUID4 = Field(
         frozen=True,
         title="Id of user who placed the order",

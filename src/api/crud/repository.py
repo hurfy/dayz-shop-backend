@@ -1,11 +1,11 @@
-from sqlalchemy import select
-from fastapi    import HTTPException
-from typing     import TypeVar, Generic
-from uuid       import UUID
-from abc        import ABC, ABCMeta
+from sqlalchemy      import select
+from fastapi         import HTTPException
+from typing          import TypeVar, Generic
+from uuid            import UUID
+from abc             import ABC, ABCMeta
 
-from api.shared import CRUDSchema
-from database   import Model, new_session
+from api.crud.schema import CRUDSchema
+from database        import Model, new_session
 
 __all__ = [
     "CRUDMixin", "GetMixin", "GetListMixin", "CreateMixin", "UpdateMixin", "DeleteMixin", "TypeORM", "TypeSchema"

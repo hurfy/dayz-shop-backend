@@ -22,9 +22,11 @@ class Model(DeclarativeBase):
 
 
 async def create_tables() -> None:
+    """create_tables ..."""
     async with db_engine.begin() as connection:
         await connection.run_sync(Model.metadata.create_all)
 
 async def delete_tables() -> None:
+    """delete_tables ..."""
     async with db_engine.begin() as connection:
         await connection.run_sync(Model.metadata.drop_all)
