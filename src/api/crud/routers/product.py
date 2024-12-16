@@ -1,14 +1,18 @@
-from fastapi                         import APIRouter, status
+from fastapi                         import APIRouter, Depends, HTTPException, status
+from typing                          import Annotated
 
 from api.shared.repositories.product import ProductRepository
 from api.shop.schemas.product        import ProductResponse, ProductCreate, ProductUpdate
+from api.dependencies                import product_repository
 from api.utils                       import HTTP_RESPONSES
-from params                          import Model, uuid_
+from params                          import Model, Puuid
 
 router = APIRouter(
     prefix = "/products",
     tags   = ["Products"],
 )
+
+repository: type[ProductRepository] = Annotated[ProductRepository, Depends(product_repository)]
 
 
 # Get data -------------------------------------------------------------------------------------------------------------
@@ -16,10 +20,11 @@ router = APIRouter(
     path="/",
     status_code=status.HTTP_200_OK,
     response_model=list[ProductResponse],
+    description="Get a non-paginated list of products",
 )
-async def get_list() -> list[ProductResponse]:
+async def read_list(repo: repository) -> list[ProductResponse]:
     """Get list of products"""
-    return await ProductRepository.fetch_list()
+    return await repo.read_list()
 
 
 @router.get(
@@ -29,12 +34,17 @@ async def get_list() -> list[ProductResponse]:
     responses={
             404: HTTP_RESPONSES[404],
     },
+    description="Get a product by id",
 )
-async def get(product_id: uuid_) -> ProductResponse:
-    """Get product by id"""
-    return await ProductRepository.fetch(
-        object_id=product_id
-    )
+async def read(
+        repo: repository, product_id: Puuid
+) -> ProductResponse:
+    """Get a product by id"""
+    try:
+        return await repo.read(object_id=product_id)
+
+    except repo.exception as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
 
 
 # Create data ----------------------------------------------------------------------------------------------------------
@@ -42,21 +52,25 @@ async def get(product_id: uuid_) -> ProductResponse:
     path="/",
     status_code=status.HTTP_201_CREATED,
     response_model=ProductResponse,
+    description="Create new product",
 )
-async def create(product_data: ProductCreate) -> ProductResponse:
-    """Create a product"""
-    return await ProductRepository.create(object_data=product_data)
+async def create(
+        repo: repository, product_data: ProductCreate
+) -> ProductResponse:
+    """Create new product"""
+    try:
+        return await repo.create(object_data=product_data)
 
+    except repo.exception as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
 
 # Update data ----------------------------------------------------------------------------------------------------------
 async def update_base(
-        product_data: type[Model], product_id: uuid_, partial: bool = False
+        repo: ProductRepository, product_data: type[Model], product_id: Puuid, partial: bool = False
 ) -> ProductResponse:
     """update_product_base ..."""
-    return await ProductRepository.update(
-        object_id=product_id,
-        object_data=product_data,
-        partial=partial,
+    return await repo.update(
+        object_id=product_id, object_data=product_data, partial=partial,
     )
 
 @router.put(
@@ -66,10 +80,19 @@ async def update_base(
     responses={
         404: HTTP_RESPONSES[404],
     },
+    description="Update a product",
 )
-async def update(product_data: ProductCreate, product_id: uuid_) -> ProductResponse:
-    """Update the product"""
-    return await update_base(product_data, product_id, partial=False)
+async def update(
+        repo: repository, product_data: ProductCreate, product_id: Puuid
+) -> ProductResponse:
+    """Update a product by id"""
+    try:
+        return await update_base(
+            repo, product_data, product_id, partial=False
+        )
+
+    except repo.exception as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
 
 
 @router.patch(
@@ -79,10 +102,19 @@ async def update(product_data: ProductCreate, product_id: uuid_) -> ProductRespo
     responses={
         404: HTTP_RESPONSES[404],
     },
+    description="Partial update a product",
 )
-async def partial_update(product_data: ProductUpdate, product_id: uuid_) -> ProductResponse:
-    """Partial update the product"""
-    return await update_base(product_data, product_id, partial=True)
+async def partial_update(
+        repo: repository, product_data: ProductUpdate, product_id: Puuid
+) -> ProductResponse:
+    """Partial update a product by id"""
+    try:
+        return await update_base(
+            repo, product_data, product_id, partial=True
+        )
+
+    except repo.exception as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
 
 
 # Delete data ----------------------------------------------------------------------------------------------------------
@@ -93,7 +125,14 @@ async def partial_update(product_data: ProductUpdate, product_id: uuid_) -> Prod
     responses={
         404: HTTP_RESPONSES[404],
     },
+    description="Delete a product",
 )
-async def delete(product_id: uuid_) -> None:
-    """Delete the product"""
-    await ProductRepository.delete(product_id)
+async def delete(
+        repo: repository, product_id: Puuid
+) -> None:
+    """Delete a product by id"""
+    try:
+        await repo.delete(product_id)
+
+    except repo.exception as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e

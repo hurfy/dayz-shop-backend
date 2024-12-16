@@ -2,8 +2,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib              import asynccontextmanager
 from fastapi                 import FastAPI
 
-from api                     import products_crud_router, categories_crud_router, orders_crud_router, orders_router
 from database                import create_tables, delete_tables
+from api                     import products_crud_router, categories_crud_router, orders_crud_router, orders_router
 
 origins = [
     "http://localhost:8000",

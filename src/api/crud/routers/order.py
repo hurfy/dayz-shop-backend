@@ -1,15 +1,19 @@
 from starlette                     import status
-from fastapi                       import APIRouter
+from fastapi                       import APIRouter, Depends, HTTPException
+from typing                        import Annotated
 
 from api.shared.repositories.order import OrderRepository
 from api.shop.schemas.order        import OrderResponse, OrderCreate
+from api.dependencies              import order_repository
 from api.utils                     import HTTP_RESPONSES
-from params                        import Model, uuid_
+from params                        import Model, Puuid
 
 router = APIRouter(
     prefix = "/orders",
     tags   = ["Orders"],
 )
+
+repository: type[OrderRepository] = Annotated[OrderRepository, Depends(order_repository)]
 
 
 # Get data -------------------------------------------------------------------------------------------------------------
@@ -17,47 +21,57 @@ router = APIRouter(
     path="/",
     status_code=status.HTTP_200_OK,
     response_model=list[OrderResponse],
+    description="Get a non-paginated list of orders",
 )
-async def get_list() -> list[OrderResponse]:
+async def read_list(repo: repository) -> list[OrderResponse]:
     """Get list of orders"""
-    return await OrderRepository.fetch_list()
+    return await repo.read_list()
 
 
 @router.get(
     path="/{order_id}",
     status_code=status.HTTP_200_OK,
-    # response_model=OrderResponse,
+    response_model=OrderResponse,
     responses={
         404: HTTP_RESPONSES[404],
     },
+    description="Get an order by id",
 )
-async def get(order_id: uuid_) -> OrderResponse:
-    """Get order by id"""
-    return await OrderRepository.fetch(
-        object_id=order_id
-    )
+async def read(
+        repo: repository, order_id: Puuid
+) -> OrderResponse:
+    """Get an order by id"""
+    try:
+        return await repo.read(object_id=order_id)
 
+    except repo.exception as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
 
 # Create data ----------------------------------------------------------------------------------------------------------
 @router.post(
     path="/",
     status_code=status.HTTP_201_CREATED,
     response_model=OrderResponse,
+    description="Create a new order",
 )
-async def create(order_data: OrderCreate) -> OrderResponse:
-    """Create a product"""
-    return await OrderRepository.create(object_data=order_data)
+async def create(
+        repo: repository, data: OrderCreate
+) -> OrderResponse:
+    """Create a new order"""
+    try:
+        return await repo.create(object_data=data)
+
+    except repo.exception as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
 
 
 # Update data ----------------------------------------------------------------------------------------------------------
 async def update_base(
-        order_data: type[Model], order_id: uuid_, partial: bool = False
+        repo: OrderRepository, data: type[Model], order_id: Puuid, partial: bool = False
 ) -> OrderResponse:
     """update_order_base ..."""
-    return await OrderRepository.update(
-        object_id=order_id,
-        object_data=order_data,
-        partial=partial,
+    return await repo.update(
+        object_id=order_id, object_data=data, partial=partial,
     )
 
 
@@ -68,10 +82,19 @@ async def update_base(
     responses={
         404: HTTP_RESPONSES[404],
     },
+    description="Update an order",
 )
-async def update(order_data: OrderCreate, order_id: uuid_) -> OrderResponse:
-    """Update the order"""
-    return await update_base(order_data, order_id, partial=False)
+async def update(
+        repo: repository, data: OrderCreate, order_id: Puuid
+) -> OrderResponse:
+    """Update an order by id"""
+    try:
+        return await update_base(
+            repo, data, order_id, partial=False
+        )
+
+    except repo.exception as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
 
 
 @router.patch(
@@ -81,10 +104,19 @@ async def update(order_data: OrderCreate, order_id: uuid_) -> OrderResponse:
     responses={
         404: HTTP_RESPONSES[404],
     },
+    description="Partial update an order",
 )
-async def partial_update(order_data: OrderCreate, order_id: uuid_) -> OrderResponse:
-    """Partial update the order"""
-    return await update_base(order_data, order_id, partial=True)
+async def partial_update(
+        repo: repository, data: OrderCreate, order_id: Puuid
+) -> OrderResponse:
+    """Partial update an order by id"""
+    try:
+        return await update_base(
+            repo, data, order_id, partial=True
+        )
+
+    except repo.exception as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
 
 
 # Delete data ----------------------------------------------------------------------------------------------------------
@@ -95,9 +127,14 @@ async def partial_update(order_data: OrderCreate, order_id: uuid_) -> OrderRespo
     responses={
         404: HTTP_RESPONSES[404],
     },
+    description="Delete an order",
 )
-async def delete(order_id: uuid_) -> None:
-    """Delete the order"""
-    await OrderRepository.delete(
-        object_id=order_id
-    )
+async def delete(
+        repo: repository, order_id: Puuid
+) -> None:
+    """Delete an order by id"""
+    try:
+        await repo.delete(object_id=order_id)
+
+    except repo.exception as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e

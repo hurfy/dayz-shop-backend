@@ -1,14 +1,19 @@
-from fastapi                       import APIRouter, status
+from fastapi                       import APIRouter, Depends, HTTPException, status
+from typing                        import Annotated
 
 from api.shared.repositories.order import OrderRepository
 from api.shop.schemas.order        import OrderResponse, OrderStatus
+from api.dependencies              import order_repository
 from api.utils                     import HTTP_RESPONSES
-from params                        import uuid_
+from params                        import Puuid
 
 router = APIRouter(
     prefix="/orders",
     tags=["Orders"],
 )
+
+repository: type[OrderRepository] = Annotated[OrderRepository, Depends(order_repository)]
+
 
 @router.patch(
     path="/{order_id}/status",
@@ -17,12 +22,21 @@ router = APIRouter(
     responses={
         404: HTTP_RESPONSES[404],
     },
+    description="Set the order status to the specified",
 )
-async def set_status(order_id: uuid_, new_status: OrderStatus) -> OrderResponse:
-    """change_order_status ..."""
-    return await OrderRepository.set_status(object_id=order_id, status=new_status.status)
+async def set_status(
+        repo: repository, order_id: Puuid, new_status: OrderStatus
+) -> OrderResponse:
+    """Set the order status to the specified"""
+    try:
+        return await repo.set_status(
+            object_id=order_id, status=new_status.status
+        )
 
-# completed canceled
+    except repo.exception as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
+
+
 @router.patch(
     path="/{order_id}/status/complete",
     status_code=status.HTTP_200_OK,
@@ -30,10 +44,19 @@ async def set_status(order_id: uuid_, new_status: OrderStatus) -> OrderResponse:
     responses={
         404: HTTP_RESPONSES[404],
     },
+    description="Mark an order as completed",
 )
-async def complete(order_id: uuid_) -> OrderResponse:
-    """complete ..."""
-    return await OrderRepository.set_status(object_id=order_id, status="completed")
+async def complete(
+        repo: repository, order_id: Puuid
+) -> OrderResponse:
+    """Mark an order as completed"""
+    try:
+        return await repo.set_status(
+            object_id=order_id, status="completed"
+        )
+
+    except repo.exception as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
 
 
 @router.patch(
@@ -43,7 +66,16 @@ async def complete(order_id: uuid_) -> OrderResponse:
     responses={
         404: HTTP_RESPONSES[404],
     },
+    description="Mark an order as canceled",
 )
-async def cancel(order_id: uuid_) -> OrderResponse:
-    """cancel ..."""
-    return await OrderRepository.set_status(object_id=order_id, status="canceled")
+async def cancel(
+        repo: repository, order_id: Puuid
+) -> OrderResponse:
+    """Mark an order as canceled"""
+    try:
+        return await repo.set_status(
+            object_id=order_id, status="canceled"
+        )
+
+    except repo.exception as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e

@@ -2,11 +2,11 @@ from pydantic              import BaseModel, Field, UUID4
 from typing                import Annotated
 
 from api.shop.models.order import EOrderStatus
-from api.crud.schema       import CRUDSchema
+from api.crud.schemas      import CRUDSchema
 from decorators            import optional
 from api.utils             import to_camelcase
 
-__all__ = ["OrderBase", "OrderSchema", "OrderResponse", "OrderCreate", "OrderUpdate", "OrderItem", "OrderStatus"]
+__all__ = ["OrderBase", "OrderResponse", "OrderCreate", "OrderUpdate", "OrderItem", "OrderStatus", "order_schema"]
 
 status = Annotated[EOrderStatus, Field(
         title="Order status",
@@ -82,7 +82,8 @@ class OrderUpdate(OrderCreate):
     ...
 
 
-class OrderSchema(CRUDSchema):
-    response = OrderResponse
-    create   = OrderCreate
-    update   = OrderUpdate
+order_schema = CRUDSchema(
+    response=OrderResponse,
+    create=OrderCreate,
+    update=OrderUpdate,
+)

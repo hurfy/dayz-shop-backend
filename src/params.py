@@ -1,14 +1,12 @@
 from pydantic              import BaseModel
-from fastapi               import Path, Body
+from fastapi               import Path
 from typing                import TypeVar, Annotated
-
-from api.shop.models.order import EOrderStatus
 
 Model = TypeVar("Model", bound=type[BaseModel])
 
 
 # Path
-uuid_ = Annotated[str, Path(
+Puuid = Annotated[str, Path(
     default          = ...,
     min_length       = 32,
     max_length       = 36,
@@ -27,9 +25,9 @@ uuid_ = Annotated[str, Path(
     },
 )]
 
-id_ = Annotated[int, Path(
+Pid = Annotated[int, Path(
     default = ...,
-    gt      = 0,
+    ge      = 1,
     title   = "ID",
     description      = "Numeric identifier",
     openapi_examples = {
@@ -49,6 +47,4 @@ id_ = Annotated[int, Path(
 # ...
 
 # Body
-status = Annotated[EOrderStatus, Body(
-
-)]
+# ...

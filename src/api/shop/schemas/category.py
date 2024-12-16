@@ -1,10 +1,10 @@
-from pydantic        import BaseModel, Field
+from pydantic         import BaseModel, Field
 
-from api.crud.schema import CRUDSchema
-from decorators      import optional
-from api.utils       import to_camelcase
+from api.crud.schemas import CRUDSchema
+from decorators       import optional
+from api.utils        import to_camelcase
 
-__all__ = ["CategoryBase", "CategorySchema", "CategoryResponse", "CategoryCreate", "CategoryUpdate"]
+__all__ = ["CategoryBase", "CategoryResponse", "CategoryCreate", "CategoryUpdate", "category_schema"]
 
 
 class CategoryBase(BaseModel):
@@ -48,7 +48,8 @@ class CategoryUpdate(CategoryBase):
     ...
 
 
-class CategorySchema(CRUDSchema):
-    response = CategoryResponse
-    create   = CategoryCreate
-    update   = CategoryUpdate
+category_schema = CRUDSchema(
+    response=CategoryResponse,
+    create=CategoryCreate,
+    update=CategoryUpdate,
+)

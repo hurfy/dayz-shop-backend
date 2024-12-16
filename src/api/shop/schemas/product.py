@@ -2,11 +2,11 @@ from pydantic                import BaseModel, Field, HttpUrl, UUID4, computed_f
 from typing                  import Annotated
 
 from api.shop.models.product import EProductType
-from api.crud.schema         import CRUDSchema
+from api.crud.schemas        import CRUDSchema
 from decorators              import optional
 from api.utils               import to_camelcase
 
-__all__ = ["ProductBase", "ProductSchema", "ProductResponse", "ProductCreate", "ProductUpdate", "ProductPrice"]
+__all__ = ["ProductBase", "ProductResponse", "ProductCreate", "ProductUpdate", "ProductPrice", "product_schema"]
 
 
 price = Annotated[int, Field(
@@ -104,7 +104,8 @@ class ProductUpdate(ProductCreate):
     ...
 
 
-class ProductSchema(CRUDSchema):
-    response = ProductResponse
-    create   = ProductCreate
-    update   = ProductUpdate
+product_schema = CRUDSchema(
+    response=ProductResponse,
+    create=ProductCreate,
+    update=ProductUpdate,
+)
