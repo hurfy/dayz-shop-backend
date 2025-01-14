@@ -1,5 +1,5 @@
 <div align="center">
-    <a href="https://github.com/hurfy/dayz-shop-backend"><img src="" alt="dayz-shop" /></a>
+    <a href="https://github.com/hurfy/dayz-shop-backend"><img src="https://github.com/user-attachments/assets/8707259c-ca40-434a-8297-7621e4c608ac" alt="dayz-shop" /></a>
 </div>
 
 <div align="center">
@@ -11,7 +11,7 @@
 <br />
 
 <div align="center">
-  Simple async ad parser :)
+  In-game item store for DayZ
 </div>
 
 <div align="center">
