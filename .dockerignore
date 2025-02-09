@@ -2,9 +2,16 @@
 .git/
 .gitignore
 
-# Deploy
-deploy/
-
 # Other
 .venv/
 .idea/
+old/
+
+# Tests
+tests/
+
+# Python cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
