@@ -3,8 +3,8 @@ services:
   server:
     restart: always
     build:
-      context: ..
-      dockerfile: deploy/Dockerfile
+      context: ../..
+      dockerfile: Dockerfile
     container_name: fastapi_app
     command: uvicorn src.main:app --host=${FASTAPI_HOST} --port=${FASTAPI_PORT} --reload
     volumes:
