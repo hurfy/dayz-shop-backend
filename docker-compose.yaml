@@ -2,9 +2,19 @@ services:
   shop-gateway:
     restart: always
     build:
-      context: src/gateway
-      dockerfile: Dockerfile
+      context: src
+      dockerfile: gateway/Dockerfile
     container_name: shop-gateway
     ports:
       - "8000:8000"
     command: uvicorn app:app --host=0.0.0.0 --port=8000 --reload
+
+  shop-auth:
+    restart: always
+    build:
+      context: src
+      dockerfile: auth/Dockerfile
+    container_name: shop-auth
+    ports:
+      - "8001:8001"
+    command: uvicorn app:app --host=0.0.0.0 --port=8001 --reload

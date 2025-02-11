@@ -8,7 +8,7 @@ RUN pip install --upgrade pip
 WORKDIR /home/shop-gateway
 
 # Install python dependencies and create wheel archives
-COPY requirements.txt .
+COPY ./gateway/requirements.txt .
 RUN pip wheel --no-cache-dir -r requirements.txt -w /wheels
 
 
@@ -19,7 +19,7 @@ FROM python:3.11.4-slim-buster
 WORKDIR /home/shop-gateway
 
 # Copy app files and dependencies from the builder stage
-COPY . .
+COPY ./gateway .
 COPY --from=builder /wheels /wheels
 
 # Install python dependencies from the wheel archive
