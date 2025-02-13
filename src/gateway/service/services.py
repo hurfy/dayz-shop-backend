@@ -13,7 +13,7 @@ SERVICES: dict[str, str] = {
 async def make_request(
         url: str, method: str, body: Any | None = None, headers: dict | None = None
 ) -> Response:
-    """Sending http requests to internal services"""
+    """Sending http requests to internal modules"""
     async with AsyncClient() as client:
         return await client.request(
             url=url, method=method, json=body, headers=headers

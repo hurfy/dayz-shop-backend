@@ -2,16 +2,7 @@ from pydantic import BaseModel, Field
 from typing   import Literal, Any
 
 
-class RefreshResponse(BaseModel):
-    refresh_token: str
-
-
-class TokenResponse(BaseModel):
-    access_token : str
-    refresh_token: str
-
-
-class LoginRequest(BaseModel):
+class SteamLogin(BaseModel):
     assoc_handle: str = Field(
         title="Association id",
         examples=["1234567890"],
@@ -56,6 +47,7 @@ class LoginRequest(BaseModel):
     )
 
     def model_dump(self, check: bool = False, *args, **kwargs) -> dict[str, Any]:
+        """model_dump ..."""
         dumped = super().model_dump(*args, **kwargs)
 
         # Modify the default data by adding the suffix “openid.” to the parameter name
