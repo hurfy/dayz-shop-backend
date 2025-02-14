@@ -1,6 +1,5 @@
 .DEFAULT_GOAL := all
 
-
 all: build down up
 
 build:
