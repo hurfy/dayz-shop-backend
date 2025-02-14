@@ -15,6 +15,7 @@ router: APIRouter = APIRouter(
     response_model=TokenPair,
 )
 async def login(client: AClient, ss: SSteam) -> TokenPair:
+    """login ..."""
     return await client.post(
         url="http://auth:8001",
         json={"steam_id": ss.get_steam_id(), "role": "user"},
