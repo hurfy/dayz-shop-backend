@@ -1,12 +1,12 @@
 import pytest
 import respx
 
-from httpx            import Response
-from re               import match
+from httpx               import Response
+from re                  import match
 
-from auth.app.modules import SteamService
-from auth.app.errors  import SteamRequestError, SteamCheckError
-from auth.app.dto     import SteamLogin
+from gateway.app.modules import SteamService
+from gateway.app.errors  import SteamRequestError, SteamCheckError
+from gateway.app.dto     import SteamLogin
 
 
 @pytest.mark.asyncio

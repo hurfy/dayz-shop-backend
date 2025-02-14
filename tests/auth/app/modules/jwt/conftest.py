@@ -5,6 +5,7 @@ from typing               import Any
 
 from auth.app.modules.jwt import encode_jwt
 
+
 @pytest_asyncio.fixture(scope="package")
 async def jwt_re_pattern() -> str:
     """jwt_re_pattern ..."""

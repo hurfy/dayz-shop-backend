@@ -1,7 +1,8 @@
 import pytest_asyncio
 
-from auth.app.modules import SteamService
-from auth.app.dto     import SteamLogin
+from gateway.app.modules import SteamService
+from gateway.app.dto     import SteamLogin
+
 
 @pytest_asyncio.fixture(scope="package")
 async def steam_login() -> SteamLogin:
