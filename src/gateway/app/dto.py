@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from typing   import Literal, Any
 
 
+# dto cause used in modules
 class SteamLogin(BaseModel):
     assoc_handle: str = Field(
         title="Association id",
