@@ -1,0 +1,31 @@
+[project]
+name = "auth"
+description = "auth-service"
+authors = [{name = "hurfy",email = "hurfydev+dzshop@gmail.com"}]
+version = "0.1.0"
+readme = "README.md"
+requires-python = ">=3.12"
+
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.dependencies]
+dzshop = {path = "./packages/dzshop", develop = false}
+fastapi="^0.115.8"
+cryptography = "^44.0.1"
+pyjwt = "^2.10.1"
+uvicorn = "^0.34.0"
+pydantic-settings = "^2.7.1"
+
+[tool.poetry.group.dev.dependencies]
+dzshop = {path = "./packages/dzshop", develop = true}
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
+asyncio_default_fixture_loop_scope = "session"

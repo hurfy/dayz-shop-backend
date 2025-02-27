@@ -1,0 +1,16 @@
+[project]
+name = "dzshop"
+description = "dayz-shop-shared"
+authors = [{name = "hurfy",email = "hurfydev+dzshop@gmail.com"}]
+version = "0.1.0"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi (>=0.115.8,<0.116.0)"
+]
+packages = [{ include = "dzshop" }]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

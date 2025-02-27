@@ -1,23 +1,10 @@
 services:
-  shop-gateway:
-    restart: always
-    build:
-      context: .
-      dockerfile: builds/service.dockerfile
-      args:
-        - ROOT_PATH=gateway
-    container_name: shop-gateway
-    ports:
-      - "8000:8000"
-    command: uvicorn main:app --host=0.0.0.0 --port=8000
-
   shop-auth:
     restart: always
     build:
       context: .
-      dockerfile: builds/auth.dockerfile
+      dockerfile: ./services/auth/Dockerfile
     container_name: shop-auth
     ports:
-      - "8001:8001"
-    environment:
-      PYTHONPATH: "/app:/app/shared"
+      - "8001:8000"
+    command: uvicorn main:app --host=0.0.0.0 --port=8000
