@@ -1,8 +1,9 @@
-from dzshop.dto        import TokenPair
-from fastapi           import APIRouter, status
+from dzshop.dto         import TokenPair
+from fastapi            import APIRouter, Request, status
 
-from api.rest.requests import CreateToken
-from core.jwt          import create_access_token, create_refresh_token
+from api.rest.responses import JWKS
+from api.rest.requests  import CreateToken, RefreshToken
+from core.jwt           import create_access_token, create_refresh_token
 
 router: APIRouter = APIRouter(
     prefix="/auth",
@@ -27,30 +28,24 @@ async def create(data: CreateToken) -> TokenPair:
         refresh_token=refresh_token,
     )
 
-    # try:
-    #     if not await ss.check_auth():
-    #         raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Steam authorization check failed")
-    #
-    #     steam_id: str = ss.get_steam_id()
-    #
-    #     access_token : str = create_access_token(data.steam_id)
-    #     refresh_token: str = create_refresh_token(data.steam_id)
-    #
-    #     # ... save to db(for revoke)
-    #
-    #     return TokenPair(
-    #         access_token=access_token,
-    #         refresh_token=refresh_token,
-    #     )
-    #
-    # except (SteamRequestError, SteamCheckError) as e:
-    #     raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail=str(e)) from e
+
+@router.post(
+    path="/refresh",
+    status_code=status.HTTP_200_OK,
+    response_model=TokenPair,
+)
+async def refresh(data: RefreshToken) -> TokenPair:
+    """Refresh and creates a pair of access and refresh tokens"""
+    ...
 
 
-# @router.post(
-#     path="/refresh",
-#     status_code=status.HTTP_200_OK,
-#     response_model=TokenPair,
-# )
-# async def refresh(data: RefreshResponse) -> TokenPair:
-#     ...
+@router.get(
+    path="/.well-known/jwks.json",
+    status_code=status.HTTP_200_OK,
+    response_model=JWKS,
+)
+async def get_jwks(request: Request) -> JWKS:
+    """Returns a list of JWK tokens"""
+    return JWKS(
+        keys=[request.app.state.jwk_cache,]
+    )

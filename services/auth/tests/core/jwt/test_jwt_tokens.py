@@ -34,6 +34,8 @@ async def assert_jwt_validity(
     [
         (TokenType.access, RoleType.admin),
         (TokenType.access, RoleType.user),
+        (TokenType.access, RoleType.admin),
+        (TokenType.access, RoleType.user),
     ]
 )
 async def test_create_jwt(token_type: TokenType, role_type: RoleType, jwt_re_pattern: str, steam_id: str) -> None:

@@ -15,7 +15,7 @@ class CreateToken(BaseModel):
     )
 
 
-class Refresh(BaseModel):
+class RefreshToken(BaseModel):
     refresh_token: str = Field(
         examples=["..."]
     )
