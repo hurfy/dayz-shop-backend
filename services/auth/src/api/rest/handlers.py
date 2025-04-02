@@ -10,7 +10,6 @@ router: APIRouter = APIRouter(
     tags=["auth"],
 )
 
-
 @router.post(
     path="/create",
     status_code=status.HTTP_200_OK,

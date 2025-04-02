@@ -21,7 +21,8 @@ sqlalchemy = "^2.0.38"
 uvicorn = "^0.34.0"
 ruff = "^0.9.6"
 cryptography = "^44.0.1"
-
+asyncpg = "^0.30.0"
+pytest-mock = "^3.14.0"
 
 
 [tool.poetry.dependencies]
