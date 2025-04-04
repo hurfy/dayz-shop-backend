@@ -23,6 +23,7 @@ ruff = "^0.9.6"
 cryptography = "^44.0.1"
 asyncpg = "^0.30.0"
 pytest-mock = "^3.14.0"
+redis = "^5.2.1"
 
 
 [tool.poetry.dependencies]
