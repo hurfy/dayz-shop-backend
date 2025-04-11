@@ -3,7 +3,7 @@ name = "dayz-shop-backend"
 description = "DayZ In-Game Shop"
 authors = ["hurfy <hurfydev+dzshop@gmail.com>"]
 version = "0.1.0"
-license = {file="LICENSE"}
+license = "MIT"
 readme = "README.md"
 package-mode = false
 
@@ -22,6 +22,7 @@ cryptography = "^44.0.1"
 asyncpg = "^0.30.0"
 pytest-mock = "^3.14.0"
 redis = "^5.2.1"
+alembic = "^1.15.2"
 
 
 [tool.poetry.dependencies]

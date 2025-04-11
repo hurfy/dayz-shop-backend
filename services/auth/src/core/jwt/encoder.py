@@ -23,6 +23,7 @@ async def encode_jwt(
         "exp": expire.timestamp(),
         "iat": now.timestamp(),
         "jti": str(uuid4()),
+        "did": str(uuid4()),
         "iss": "dzshop-auth",
     })
 

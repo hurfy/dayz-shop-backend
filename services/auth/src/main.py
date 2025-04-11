@@ -22,4 +22,3 @@ app: FastAPI = FastAPI(
 
 app.include_router(auth_router)
 app.include_router(service_router)
-

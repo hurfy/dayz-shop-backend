@@ -9,6 +9,9 @@ BASE_DIR: Path = Path(__file__).parent.parent
 
 
 class AuthConfig(BaseSettings):
+    database_address: str = "postgresql+asyncpg://hurfy:hurfy0_@localhost:5432/dzshop"
+
+    # tokens
     algorithm: str = "RS256"
 
     access_token_expire_minutes : int = 15
