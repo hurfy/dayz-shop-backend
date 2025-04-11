@@ -1,9 +1,9 @@
 import pytest
 
-from sqlalchemy.ext.asyncio   import async_sessionmaker
-from unittest.mock            import AsyncMock, MagicMock
+from sqlalchemy.ext.asyncio          import async_sessionmaker
+from unittest.mock                   import AsyncMock, MagicMock
 
-from modules.database.session import get_async_sessionmaker, get_db
+from dzshop.modules.database.session import get_async_sessionmaker, get_db
 
 
 @pytest.mark.asyncio
@@ -12,7 +12,7 @@ async def test_get_async_sessionmaker(
 ) -> None:
     """Test that get_async_sessionmaker creates a sessionmaker with the right engine"""
     mock_create_engine = mocker.patch(
-        "modules.database.session.create_async_engine",
+        "dzshop.modules.database.session.create_async_engine",
         return_value=async_engine
     )
 
@@ -28,7 +28,7 @@ async def test_get_db(
 ) -> None:
     """Test that get_db creates a session and closes it correctly"""
     mocker.patch(
-        "modules.database.session.get_async_sessionmaker",
+        "dzshop.modules.database.session.get_async_sessionmaker",
         return_value=sessionmaker
     )
 

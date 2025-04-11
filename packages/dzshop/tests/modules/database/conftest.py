@@ -1,9 +1,9 @@
 import pytest_asyncio
 
-from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine, async_sessionmaker
-from unittest.mock          import AsyncMock, MagicMock
+from sqlalchemy.ext.asyncio  import AsyncSession, AsyncEngine, async_sessionmaker
+from unittest.mock           import AsyncMock, MagicMock
 
-from modules.database       import UnitOfWork
+from dzshop.modules.database import UnitOfWork
 
 
 @pytest_asyncio.fixture(scope="function")

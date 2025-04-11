@@ -1,4 +1,4 @@
-from modules.redis.client import RedisClient, get_redis
+from dzshop.modules.redis.client import RedisClient, get_redis
 
 __all__ = [
     # client

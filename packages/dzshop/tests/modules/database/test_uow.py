@@ -1,8 +1,8 @@
 import pytest
 
-from unittest.mock    import AsyncMock
+from unittest.mock           import AsyncMock
 
-from modules.database import UnitOfWork
+from dzshop.modules.database import UnitOfWork
 
 
 @pytest.mark.asyncio

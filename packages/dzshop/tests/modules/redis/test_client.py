@@ -1,9 +1,9 @@
 import pytest
 
-from unittest.mock import AsyncMock
-from redis         import Redis
+from unittest.mock        import AsyncMock
+from redis                import Redis
 
-from modules.redis import RedisClient, get_redis
+from dzshop.modules.redis import RedisClient, get_redis
 
 
 @pytest.mark.asyncio
@@ -11,7 +11,7 @@ async def test_get_instance_creates_new_instance(mocker: AsyncMock) -> None:
     """test_get_instance_creates_new_instance ..."""
     mock_redis    = mocker.AsyncMock(spec=Redis)
     mock_from_url = mocker.patch(
-        "modules.redis.client.from_url", new_callable=mocker.AsyncMock, return_value=mock_redis
+        "dzshop.modules.redis.client.from_url", new_callable=mocker.AsyncMock, return_value=mock_redis
     )
 
     # Make sure the instance is created
