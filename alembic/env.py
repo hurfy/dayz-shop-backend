@@ -1,25 +1,25 @@
-from dzshop.modules.database import Model
-from logging.config          import fileConfig
-from sqlalchemy              import engine_from_config
-from sqlalchemy              import pool
-from alembic                 import context
+from logging.config                         import fileConfig
+from sqlalchemy                             import engine_from_config
+from sqlalchemy                             import pool
+from alembic                                import context
 
-from adapters.database       import IssuedToken  # noqa
-from config                  import auth_config
+from services.gateway.src.adapters.database import GatewayModel, User      # noqa
+from services.auth.src.adapters.database    import AuthModel, IssuedToken  # noqa
+from services.gateway.src.config            import gateway_config
 
 config = context.config
 config.set_main_option(
     "sqlalchemy.url",
-    auth_config.database_address + "?async_fallback=True",
+    gateway_config.database_address + "?async_fallback=True",
 )
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = Model.metadata
+target_metadata = [GatewayModel.metadata, AuthModel.metadata]
 
 
-def run_migrations_offline() -> None:
+def run_migrations_offline() -> None:  # noqa
     """Run migrations in 'offline' mode.
 
     This configures the context with just a URL
@@ -43,7 +43,7 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
-def run_migrations_online() -> None:
+def run_migrations_online() -> None:  # noqa
     """Run migrations in 'online' mode.
 
     In this scenario we need to create an Engine

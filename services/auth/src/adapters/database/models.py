@@ -1,9 +1,12 @@
-from sqlalchemy              import Column, String, Boolean
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy     import Column, String, Boolean
 
-from dzshop.modules.database import Model
+
+class AuthModel(DeclarativeBase):
+    ...
 
 
-class IssuedToken(Model):
+class IssuedToken(AuthModel):
     __tablename__ = "issued_tokens"
 
     jti    : str  = Column(String(36), primary_key=True)

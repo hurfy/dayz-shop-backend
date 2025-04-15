@@ -1,8 +1,10 @@
 from adapters.database.session import session
-from adapters.database.models  import IssuedToken
+
+from .models                   import AuthModel, IssuedToken
 
 __all__ = [
     # models
+    "AuthModel",
     "IssuedToken",
 
     # session
