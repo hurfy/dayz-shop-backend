@@ -1,11 +1,12 @@
-from dzshop.dto.steam import SteamLogin
-from dzshop.dto.auth  import TokenPair, CreateToken
+from dzshop.dto.steam import SteamLoginDTO, SteamUserDTO
+from dzshop.dto.auth  import TokenPairDTO, CreateTokenDTO
 
 __all__ = [
     # auth
-    "TokenPair",
-    "CreateToken",
+    "TokenPairDTO",
+    "CreateTokenDTO",
 
     # steam
-    "SteamLogin",
+    "SteamLoginDTO",
+    "SteamUserDTO",
 ]

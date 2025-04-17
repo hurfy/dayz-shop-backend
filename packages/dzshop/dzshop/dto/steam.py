@@ -1,9 +1,9 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict, HttpUrl
 from typing   import Literal, Any
 
 
 # dto cause used in modules
-class SteamLogin(BaseModel):
+class SteamLoginDTO(BaseModel):
     assoc_handle: str = Field(
         title="Association id",
         examples=["1234567890"],
@@ -59,3 +59,33 @@ class SteamLogin(BaseModel):
             converted["openid.mode"] = "check_authentication"
 
         return converted
+
+
+class SteamUserDTO(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    steam_id: str = Field(
+        title="User SteamID",
+        examples=["76561198181797231"],
+        alias="steamid",
+    )
+    persona_name: str = Field(
+        title="Personal name",
+        examples=["ZaMkaD24"],
+        alias="personaname",
+    )
+    profile_url: HttpUrl = Field(
+        title="Profile URL",
+        examples=["https://steamcommunity.com/id/ZaMkaD24/"],
+        alias="profileurl",
+    )
+    avatar_full: HttpUrl = Field(
+        title="Avatar full",
+        examples=["https://avatars.fastly.steamstatic.com/49f03985775bb7df0114d2a688660262e453a222_full.jpg"],
+        alias="avatarfull",
+    )
+    avatar_medium: HttpUrl = Field(
+        title="Avatar medium",
+        examples=["https://avatars.fastly.steamstatic.com/49f03985775bb7df0114d2a688660262e453a222.jpg"],
+        alias="avatarmedium",
+    )

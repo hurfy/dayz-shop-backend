@@ -3,13 +3,13 @@ from pydantic     import BaseModel, Field
 from dzshop.enums import RoleType
 
 
-class TokenPair(BaseModel):
+class TokenPairDTO(BaseModel):
     access_token : str
     refresh_token: str
     token_type   : str = "Bearer"
 
 
-class CreateToken(BaseModel):
+class CreateTokenDTO(BaseModel):
     steam_id: str = Field(
         max_length=17,
         min_length=17,

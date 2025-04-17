@@ -9,6 +9,7 @@
     <orderEntry type="module" module-name="dzshop" />
     <orderEntry type="module" module-name="gateway" />
     <orderEntry type="module" module-name="auth" />
+    <orderEntry type="module" module-name="users" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_FOLDERS">

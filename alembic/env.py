@@ -1,11 +1,11 @@
-from logging.config                         import fileConfig
-from sqlalchemy                             import engine_from_config
-from sqlalchemy                             import pool
-from alembic                                import context
+from logging.config                       import fileConfig
+from sqlalchemy                           import engine_from_config
+from sqlalchemy                           import pool
+from alembic                              import context
 
-from services.gateway.src.adapters.database import GatewayModel, User      # noqa
-from services.auth.src.adapters.database    import AuthModel, IssuedToken  # noqa
-from services.gateway.src.config            import gateway_config
+from services.users.src.adapters.database import UsersModel, User        # noqa
+from services.auth.src.adapters.database  import AuthModel, IssuedToken  # noqa
+from services.gateway.src.config          import gateway_config
 
 config = context.config
 config.set_main_option(
@@ -16,7 +16,7 @@ config.set_main_option(
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = [GatewayModel.metadata, AuthModel.metadata]
+target_metadata = [UsersModel.metadata, AuthModel.metadata]
 
 
 def run_migrations_offline() -> None:  # noqa
