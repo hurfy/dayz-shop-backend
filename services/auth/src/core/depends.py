@@ -10,4 +10,4 @@ async def uow() -> UnitOfWork:
     return UnitOfWork(session)
 
 
-UOW: UnitOfWork = Annotated[UnitOfWork, Depends(uow)]
+unit_of_work: UnitOfWork = Annotated[UnitOfWork, Depends(uow)]

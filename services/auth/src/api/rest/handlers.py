@@ -1,13 +1,13 @@
-from dzshop.dto              import TokenPair, CreateToken
-from datetime                import datetime
-from fastapi                 import APIRouter, Request, status
-from typing                  import Any
+from dzshop.dto         import TokenPairDTO, CreateTokenDTO
+from datetime           import datetime
+from fastapi            import APIRouter, Request, status
+from typing             import Any
 
-from api.rest.responses      import JWKS
-from api.rest.requests       import RefreshToken
-from adapters.database       import IssuedToken
-from core.depends            import UOW
-from core.jwt                import create_access_token, create_refresh_token, decode_jwt
+from api.rest.responses import JwksDTO
+from api.rest.requests  import RefreshTokenDTO
+from adapters.database  import IssuedToken
+from core.depends       import unit_of_work
+from core.jwt           import create_access_token, create_refresh_token, decode_jwt
 
 router: APIRouter = APIRouter(
     prefix="/auth",
@@ -18,9 +18,9 @@ router: APIRouter = APIRouter(
 @router.post(
     path="/create",
     status_code=status.HTTP_200_OK,
-    response_model=TokenPair,
+    response_model=TokenPairDTO,
 )
-async def create(data: CreateToken, uow: UOW, request: Request) -> TokenPair:
+async def create(data: CreateTokenDTO, uow: unit_of_work, request: Request) -> TokenPairDTO:
     """Creates a pair of access and refresh tokens"""
     access_token : str = await create_access_token(data.steam_id, data.role)
     refresh_token: str = await create_refresh_token(data.steam_id, data.role)
@@ -40,7 +40,7 @@ async def create(data: CreateToken, uow: UOW, request: Request) -> TokenPair:
             )
         )
 
-    return TokenPair(
+    return TokenPairDTO(
         access_token=access_token,
         refresh_token=refresh_token,
     )
@@ -49,9 +49,9 @@ async def create(data: CreateToken, uow: UOW, request: Request) -> TokenPair:
 @router.post(
     path="/refresh",
     status_code=status.HTTP_200_OK,
-    response_model=TokenPair,
+    response_model=TokenPairDTO,
 )
-async def refresh(data: RefreshToken) -> TokenPair:
+async def refresh(data: RefreshTokenDTO) -> TokenPairDTO:
     """Refresh and creates a pair of access and refresh tokens"""
     ...
     # ... check if type is refresh
@@ -61,10 +61,10 @@ async def refresh(data: RefreshToken) -> TokenPair:
 @router.get(
     path="/.well-known/jwks.json",
     status_code=status.HTTP_200_OK,
-    response_model=JWKS,
+    response_model=JwksDTO,
 )
-async def get_jwks(request: Request) -> JWKS:
+async def get_jwks(request: Request) -> JwksDTO:
     """Returns a list of JWK tokens"""
-    return JWKS(
+    return JwksDTO(
         keys=[request.app.state.jwk_cache,]
     )

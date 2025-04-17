@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from typing   import Any
 
 
-class JWKS(BaseModel):
+class JwksDTO(BaseModel):
     keys: list[dict[str, Any]] = Field(
         examples=[{
           "kty": "RSA",

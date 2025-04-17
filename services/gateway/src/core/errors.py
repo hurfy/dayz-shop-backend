@@ -1,18 +1,20 @@
-# The response from Steam was incorrect, no validation check field or something else
-class SteamRequestError(Exception):
-    def __init__(self, status: int, message: str) -> None:
-        self.status : int = status
+# Raised when Steam authentication status cannot be parsed or validated.
+class SteamCheckError(Exception):
+    def __init__(self, message: str = "Failed to parse Steam authentication status") -> None:
         self.message: str = message
 
+        super().__init__(self.message)
+
     def __str__(self) -> str:
-        return (
-            f"The request to Steam was not successful\n"
-            f"Status : {self.status}\n"
-            f"Message: {self.message}"
-        )
+        return self.message
 
 
-# Failed to authenticate, network error or Steam is not responding
-class SteamCheckError(Exception):
+# Raised when the list of Steam players is unexpectedly empty
+class EmptySteamPlayersError(Exception):
+    def __init__(self, message: str = "The list of players with the specified SteamID is empty") -> None:
+        self.message: str = message
+
+        super().__init__(self.message)
+
     def __str__(self) -> str:
-        return "Authentication status parsing error"
+        return self.message

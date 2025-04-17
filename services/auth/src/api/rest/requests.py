@@ -1,7 +1,7 @@
-from pydantic     import BaseModel, Field
+from pydantic import BaseModel, Field
 
 
-class RefreshToken(BaseModel):
+class RefreshTokenDTO(BaseModel):
     refresh_token: str = Field(
         examples=["..."]
     )

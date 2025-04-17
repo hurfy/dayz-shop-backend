@@ -1,30 +1,52 @@
-from httpx            import AsyncClient
+from dzshop.dto.steam import SteamLoginDTO, SteamUserDTO
+from typing           import Any
+from httpx            import Response
 
-from dzshop.dto.steam import SteamLogin
-from core.errors      import SteamCheckError, SteamRequestError
+from core.requests    import HttpClient
+from core.errors      import SteamCheckError, EmptySteamPlayersError
+from config           import gateway_config
 
 
 class SteamService:
-    url: str = r"https://steamcommunity.com/openid/login"
+    openid_url   : str = r"https://steamcommunity.com/openid/login"
+    steam_api_url: str = r"http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/"  # noqa (http)
 
-    def __init__(self, params: SteamLogin) -> None:
-        self._params = params.model_dump(mode="json", check=True)
+    def __init__(self, params: SteamLoginDTO) -> None:
+        self._params: dict[str, Any] = params.model_dump(mode="json", check=True)
+        self._client: HttpClient     = HttpClient()
 
-    def get_params(self) -> SteamLogin:
+    def get_params(self) -> SteamLoginDTO:
         """SteamLogin getter"""
         return self._params
 
     async def check_auth(self) -> bool:
         """Check authorization status for security purposes"""
-        async with AsyncClient() as client:
-            response = await client.get(
-                url=self.url, params=self._params
-            )
+        response: Response = await self._client.get(
+            url=self.openid_url,
+            params=self._params,
+        )
 
-            if not response.is_success:
-                raise SteamRequestError(response.status_code, response.text)
+        return await self._parse_status(response.text)
 
-            return await self._parse_status(response.text)
+    async def get_user_data(self) -> SteamUserDTO:
+        """Fetch user data"""
+        params: dict[str, Any] = {
+            "key": gateway_config.steam_api_key,
+            "steamids": await self.get_steam_id(),
+        }
+
+        response: Response = await self._client.get(
+            url=self.steam_api_url,
+            params=params,
+        )
+
+        json_data: dict[str, Any]       = response.json()
+        players  : list[dict[str, Any]] = json_data.get("response", {}).get("players", [])
+
+        if not players:
+            raise EmptySteamPlayersError()
+
+        return SteamUserDTO.model_validate(players[0])
 
     async def get_steam_id(self) -> str:
         """Get steam id from claimed id url"""
@@ -32,7 +54,6 @@ class SteamService:
 
     async def _parse_status(self, text: str) -> bool:
         """Parse the response from Steam"""
-        # Something obviously went wrong
         if fr"ns:{self._params['openid.ns']}" not in text:
             raise SteamCheckError()
 

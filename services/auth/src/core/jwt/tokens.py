@@ -2,7 +2,6 @@ from dzshop.enums     import RoleType
 from datetime         import timedelta
 from typing           import Any
 
-
 from core.jwt.decoder import decode_jwt
 from core.jwt.encoder import encode_jwt
 from core.errors      import InvalidToken
