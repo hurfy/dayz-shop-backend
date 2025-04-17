@@ -1,8 +1,8 @@
 """Initial
 
-Revision ID: 5ae0746489b3
+Revision ID: 5fba2527d5ec
 Revises: 
-Create Date: 2025-04-15 09:40:14.046595
+Create Date: 2025-04-17 10:50:49.164762
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '5ae0746489b3'
+revision: str = '5fba2527d5ec'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -24,9 +24,8 @@ def upgrade() -> None:
     op.create_table('users',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('steam_id', sa.String(length=17), nullable=False),
-    sa.Column('personal_name', sa.String(length=255), nullable=False),
+    sa.Column('persona_name', sa.String(length=255), nullable=False),
     sa.Column('profile_url', sa.String(length=255), nullable=False),
-    sa.Column('avatar', sa.String(length=255), nullable=False),
     sa.Column('avatar_medium', sa.String(length=255), nullable=False),
     sa.Column('avatar_full', sa.String(length=255), nullable=False),
     sa.PrimaryKeyConstraint('id')
@@ -35,6 +34,7 @@ def upgrade() -> None:
     sa.Column('jti', sa.String(length=36), nullable=False),
     sa.Column('revoked', sa.Boolean(), nullable=True),
     sa.Column('subject', sa.String(length=17), nullable=True),
+    sa.Column('expired', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('jti')
     )
     # ### end Alembic commands ###

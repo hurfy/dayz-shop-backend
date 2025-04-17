@@ -1,4 +1,5 @@
 from dzshop.dto              import TokenPair, CreateToken
+from datetime                import datetime
 from fastapi                 import APIRouter, Request, status
 from typing                  import Any
 
@@ -21,18 +22,19 @@ router: APIRouter = APIRouter(
 )
 async def create(data: CreateToken, uow: UOW, request: Request) -> TokenPair:
     """Creates a pair of access and refresh tokens"""
-    print(request.headers.get("X-Device-ID"))
-
     access_token : str = await create_access_token(data.steam_id, data.role)
     refresh_token: str = await create_refresh_token(data.steam_id, data.role)
 
     # omg cringe :/
+    # TODO: rework tokens system ...
     decoded: dict[str, Any] = await decode_jwt(refresh_token)
 
+    # TODO: move to repository layer ...
     async with uow:
         uow.session.add(
             IssuedToken(
                 jti=decoded["jti"],
+                expired=datetime.fromtimestamp(decoded["exp"]),
                 subject=data.steam_id,
                 # device_id=decoded["did"],
             )
