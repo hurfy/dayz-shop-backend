@@ -1,8 +1,50 @@
-[project]
+[tool.poetry]
 name = "dayz-shop-backend"
-requires-python = ">=3.11"
+description = "DayZ In-Game Shop"
+authors = ["hurfy <hurfydev+dzshop@gmail.com>"]
+version = "0.1.0"
 license = "MIT"
 readme = "README.md"
+package-mode = false
+
+
+[tool.poetry.group.dev.dependencies]
+httpx = "^0.28.1"
+pydantic = "^2.10.6"
+pydantic-settings = "^2.7.1"
+pyjwt = "^2.10.1"
+pytest = "^8.3.4"
+pytest-asyncio = "^0.25.3"
+sqlalchemy = "^2.0.38"
+uvicorn = "^0.34.0"
+ruff = "^0.9.6"
+cryptography = "^44.0.1"
+asyncpg = "^0.30.0"
+pytest-mock = "^3.14.0"
+redis = "^5.2.1"
+alembic = "^1.15.2"
+
+
+[tool.poetry.dependencies]
+python = ">=3.12"
+dzshop = {path = "packages/dzshop"}
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
+asyncio_default_fixture_loop_scope = "session"
+
+
+[tool.black]
+line-length = 100
+
 
 [tool.ruff]
 line-length = 120
@@ -38,16 +80,17 @@ exclude = [
     "node_modules",
     "site-packages",
     "venv",
+    "alembic",
 ]
 
 [tool.ruff.lint]
 select = [
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
-    "F",  # pyflakes
-    "B",  # flake8-bugbear
-    "C4",  # flake8-comprehensions
-    "UP",  # pyupgrade
+    "E",     # pycodestyle errors
+    "W",     # pycodestyle warnings
+    "F",     # pyflakes
+    "B",     # flake8-bugbear
+    "C4",    # flake8-comprehensions
+    "UP",    # pyupgrade
     "D102",  # docstring in public method
     "D103",  # docstring in public function
 ]

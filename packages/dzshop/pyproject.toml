@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "dzshop"
+description = "dayz-shop-shared"
+authors = ["hurfy <hurfydev+dzshop@gmail.com>"]
+version = "0.1.0"
+readme = "README.md"
+packages = [{ include = "dzshop", from = "." }]
+
+
+[tool.poetry.dependencies]
+python = ">=3.12"
+fastapi = ">=0.115.8,<0.116.0"
+asyncpg = "^0.30.0"
+sqlalchemy = "^2.0.38"
+redis = "^5.2.1"
+psycopg2 = "^2.9.10"
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
