@@ -2,9 +2,10 @@ from dzshop.modules.database   import UnitOfWork
 from dzshop.dto                import SteamUserDTO
 from sqlalchemy                import select
 
+from core.errors               import UserWriteError
+
 from adapters.database.session import session
 from adapters.database.models  import User
-from core.errors               import UserWriteError
 
 
 class UsersRepository:

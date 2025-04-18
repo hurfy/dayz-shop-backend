@@ -1,9 +1,10 @@
 from dzshop.modules.database   import UnitOfWork
 from typing                    import Any
 
-from adapters.database.models  import IssuedToken
-from adapters.database.session import session
 from core.errors               import TokensPairWriteError
+
+from adapters.database.session import session
+from adapters.database.models  import IssuedToken
 
 
 class IssuedTokensRepository:

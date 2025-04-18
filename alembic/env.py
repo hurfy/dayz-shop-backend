@@ -1,16 +1,23 @@
-from logging.config                       import fileConfig
-from sqlalchemy                           import engine_from_config
-from sqlalchemy                           import pool
-from alembic                              import context
+from pydantic_settings                           import BaseSettings
+from logging.config                              import fileConfig
+from sqlalchemy                                  import engine_from_config
+from sqlalchemy                                  import pool
+from alembic                                     import context
 
-from services.users.src.adapters.database import UsersModel, User        # noqa
-from services.auth.src.adapters.database  import AuthModel, IssuedToken  # noqa
-from services.gateway.src.config          import gateway_config
+from services.users.src.adapters.database.models import UsersModel, User        # noqa
+from services.auth.src.adapters.database.models  import AuthModel, IssuedToken  # noqa
+
+
+class AlembicSettings(BaseSettings):
+    database_address: str = "postgresql+asyncpg://hurfy:hurfy@localhost/dzshop"
+
+
+alembic_config: AlembicSettings = AlembicSettings()
 
 config = context.config
 config.set_main_option(
     "sqlalchemy.url",
-    gateway_config.database_address + "?async_fallback=True",
+    alembic_config.database_address + "?async_fallback=True",
 )
 
 if config.config_file_name is not None:

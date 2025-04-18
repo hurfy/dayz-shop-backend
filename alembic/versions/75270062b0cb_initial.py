@@ -1,8 +1,8 @@
 """Initial
 
-Revision ID: 5fba2527d5ec
+Revision ID: 75270062b0cb
 Revises: 
-Create Date: 2025-04-17 10:50:49.164762
+Create Date: 2025-04-18 11:33:38.444684
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '5fba2527d5ec'
+revision: str = '75270062b0cb'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -32,9 +32,10 @@ def upgrade() -> None:
     )
     op.create_table('issued_tokens',
     sa.Column('jti', sa.String(length=36), nullable=False),
-    sa.Column('revoked', sa.Boolean(), nullable=True),
-    sa.Column('subject', sa.String(length=17), nullable=True),
-    sa.Column('expired', sa.DateTime(), nullable=True),
+    sa.Column('revoked', sa.Boolean(), nullable=False),
+    sa.Column('subject', sa.String(length=17), nullable=False),
+    sa.Column('expired', sa.DateTime(), nullable=False),
+    sa.Column('type', sa.Enum('access', 'refresh', name='tokentype'), nullable=False),
     sa.PrimaryKeyConstraint('jti')
     )
     # ### end Alembic commands ###
