@@ -30,6 +30,4 @@ async def upsert_user(
 
     # Database error
     except UserWriteError as exs:
-        raise HTTPException(
-            status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exs),
-        ) from exs
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exs)) from exs

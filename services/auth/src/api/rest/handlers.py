@@ -1,12 +1,10 @@
 from dzshop.dto         import TokenPairDTO, CreateTokenDTO
-from datetime           import datetime
-from fastapi            import APIRouter, Request, status
-from typing             import Any
+from fastapi            import APIRouter, Request, status, HTTPException
 
 from api.rest.responses import JwksDTO
 from api.rest.requests  import RefreshTokenDTO
-from adapters.database  import IssuedToken
-from core.depends       import unit_of_work
+from core.depends       import tokens_repository
+from core.errors        import TokensPairWriteError
 from core.jwt           import create_access_token, create_refresh_token, decode_jwt
 
 router: APIRouter = APIRouter(
@@ -20,25 +18,21 @@ router: APIRouter = APIRouter(
     status_code=status.HTTP_200_OK,
     response_model=TokenPairDTO,
 )
-async def create(data: CreateTokenDTO, uow: unit_of_work, request: Request) -> TokenPairDTO:
+async def create(data: CreateTokenDTO, tr: tokens_repository, request: Request) -> TokenPairDTO:
     """Creates a pair of access and refresh tokens"""
     access_token : str = await create_access_token(data.steam_id, data.role)
     refresh_token: str = await create_refresh_token(data.steam_id, data.role)
 
     # omg cringe :/
     # TODO: rework tokens system ...
-    decoded: dict[str, Any] = await decode_jwt(refresh_token)
-
-    # TODO: move to repository layer ...
-    async with uow:
-        uow.session.add(
-            IssuedToken(
-                jti=decoded["jti"],
-                expired=datetime.fromtimestamp(decoded["exp"]),
-                subject=data.steam_id,
-                # device_id=decoded["did"],
-            )
+    try:
+        tr.create_tokens_pair(
+            access_token=await decode_jwt(access_token),
+            refresh_token=await decode_jwt(refresh_token),
         )
+
+    except TokensPairWriteError as exs:
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exs)) from exs
 
     return TokenPairDTO(
         access_token=access_token,
