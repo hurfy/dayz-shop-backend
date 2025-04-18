@@ -55,7 +55,11 @@ class HttpClient:
             return response
 
         except HTTPStatusError as exs:
-            raise HTTPException(status_code=exs.response.status_code, detail=exs.response.text) from exs
+            raise HTTPException(
+                status_code=exs.response.status_code, detail=exs.response.text
+            ) from exs
 
         except RequestError as exs:
-            raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exs)) from exs
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Service: {url}({exs})"
+            ) from exs

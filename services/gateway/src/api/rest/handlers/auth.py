@@ -5,6 +5,7 @@ from httpx        import Response
 
 from core.depends import http_client, steam_service
 from core.errors  import EmptySteamPlayersError, SteamCheckError
+from core.utils   import get_role_type
 from config       import gateway_config
 
 router: APIRouter = APIRouter(
@@ -44,7 +45,7 @@ async def login(
     # Prepare token creation request
     data: CreateTokenDTO = CreateTokenDTO(
         steam_id=await ss.get_steam_id(),
-        role=RoleType.admin,  # TODO: make dynamic
+        role=get_role_type(await ss.get_steam_id()),
     )
 
     # Create tokens pair(Auth)
