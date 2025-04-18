@@ -1,4 +1,5 @@
 from dzshop.modules.database   import UnitOfWork
+from datetime                  import datetime
 from typing                    import Any
 
 from core.errors               import TokensPairWriteError
@@ -19,14 +20,14 @@ class IssuedTokensRepository:
                     jti=access["jti"],
                     subject=access["sub"],
                     type=access["type"],
-                    expired=access["exp"]
+                    expired=datetime.fromtimestamp(access["exp"]),
                 )
 
                 refresh_token = IssuedToken(
                     jti=refresh["jti"],
                     subject=refresh["sub"],
                     type=refresh["type"],
-                    expired=refresh["exp"]
+                    expired=datetime.fromtimestamp(refresh["exp"]),
                 )
 
                 uow.session.add_all([access_token, refresh_token])

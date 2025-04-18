@@ -26,9 +26,9 @@ async def create(data: CreateTokenDTO, tr: tokens_repository, request: Request) 
     # omg cringe :/
     # TODO: rework tokens system ...
     try:
-        tr.create_tokens_pair(
-            access_token=await decode_jwt(access_token),
-            refresh_token=await decode_jwt(refresh_token),
+        await tr.create_tokens_pair(
+            access=await decode_jwt(access_token),
+            refresh=await decode_jwt(refresh_token),
         )
 
     except TokensPairWriteError as exs:
