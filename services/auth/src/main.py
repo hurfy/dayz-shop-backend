@@ -1,11 +1,10 @@
 from dzshop.api import service_router
+from contextlib import asynccontextmanager
 from fastapi    import FastAPI
 
 from api.rest   import auth_router
 from core.jwk   import create_jwk
 from config     import auth_config
-
-from contextlib import asynccontextmanager
 
 
 @asynccontextmanager
