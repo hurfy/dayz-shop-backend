@@ -1,11 +1,10 @@
-from dzshop.dto         import TokenPairDTO, CreateTokenDTO
-from fastapi            import APIRouter, Request, status, HTTPException
+from dzshop.dto        import TokenPairDTO, CreateTokenDTO, JwksDTO
+from fastapi           import APIRouter, Request, HTTPException, status
 
-from api.rest.responses import JwksDTO
-from api.rest.requests  import RefreshTokenDTO
-from core.depends       import tokens_repository
-from core.errors        import TokensPairWriteError
-from core.jwt           import create_access_token, create_refresh_token, decode_jwt
+from api.rest.requests import RefreshTokenDTO
+from core.depends      import tokens_repository
+from core.errors       import TokensPairWriteError
+from core.jwt          import create_access_token, create_refresh_token, decode_jwt
 
 router: APIRouter = APIRouter(
     prefix="/auth",
@@ -18,13 +17,12 @@ router: APIRouter = APIRouter(
     status_code=status.HTTP_200_OK,
     response_model=TokenPairDTO,
 )
-async def create(data: CreateTokenDTO, tr: tokens_repository, request: Request) -> TokenPairDTO:
+async def create(data: CreateTokenDTO, tr: tokens_repository) -> TokenPairDTO:
     """Creates a pair of access and refresh tokens"""
     access_token : str = await create_access_token(data.steam_id, data.role)
     refresh_token: str = await create_refresh_token(data.steam_id, data.role)
 
-    # omg cringe :/
-    # TODO: rework tokens system ...
+    # Save to database(maybe should rework in the future?)
     try:
         await tr.create_tokens_pair(
             access=await decode_jwt(access_token),
