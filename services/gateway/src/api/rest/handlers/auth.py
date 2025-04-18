@@ -1,4 +1,3 @@
-from dzshop.enums import RoleType
 from dzshop.dto   import TokenPairDTO, CreateTokenDTO, SteamUserDTO
 from fastapi      import APIRouter, HTTPException, status
 from httpx        import Response
